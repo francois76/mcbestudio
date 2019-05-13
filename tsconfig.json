@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "module": "ES6",
+        "noImplicitAny": true
+    },
+    "include": [
+        "packs/**/scripts/client/*",
+        "packs/**/scripts/server/*",
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

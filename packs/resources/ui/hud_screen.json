@@ -1,0 +1,5 @@
+{
+  "hud_screen@common.base_screen": {
+    "always_accepts_input": true
+  }
+}

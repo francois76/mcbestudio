@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<script src="UIEngine.js"></script>
+	<link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+	<div class="gameWindow">
+    	<div class="titlebar">
+			<div class="titlebar-spacer"></div>
+			<button id="generateSequenceButton" class="title-button">Générer séquence</button>
+			<button id="placeKeyframeButton" class="title-button">Placer Keyframe</button>
+            <button id="exitButton" class="title-button">Quitter MCBE Studio</button>
+		</div>
+		<div class="player">
+			<div id="timeline" class="timeline">
+				[-----------------------------------------]
+			</div>
+			<div class="timeline-control">
+				<button id="playPauseButton" class="playPause timeline-button"></button>
+				<button id="firstFrameButton" class="firtFrame timeline-button"><<</button>
+				<button id="previousFrameButton" class="previousFrame timeline-button"><</button>
+				<button id="nextFrameButton" class="nextFrame timeline-button">></button>
+				<button id="lastFrameButton" class="lastFrame timeline-button">>></button>
+			</div>
+		</div>
+	</div>   
+</body>
+<script src="js/index.js"></script>
+</html>

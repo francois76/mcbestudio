@@ -178,36 +178,37 @@ serverSystem.generateKeyframe = function(currentClient){
 
 serverSystem.goToFirstFrame = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
-  connectedClientsdata[eventData.data.id].currentPosition = 0;
-  connectedClientsdata[eventData.data.id].currentKeyframe = connectedClientsdata[eventData.data.id].timeline.find(keyframe=>keyframe.previous == -1);
-  this.applyComponentChanges(currentClient.player,connectedClientsdata[eventData.data.id].currentKeyframe.positionComponent);
-  this.applyComponentChanges(currentClient.player,connectedClientsdata[eventData.data.id].currentKeyframe.rotationComponent);
+  currentClient.currentPosition = 0;
+  currentClient.currentKeyframe = currentClient.timeline.find(keyframe=>keyframe.previous == -1);
+  this.updatePositionPlayerFromFrame(currentClient);
 }
 
 serverSystem.goToLastFrame = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
-  connectedClientsdata[eventData.data.id].currentPosition = connectedClientsdata[eventData.data.id].frameNumber*60;
-  connectedClientsdata[eventData.data.id].currentKeyframe = connectedClientsdata[eventData.data.id].timeline.find(keyframe=>keyframe.next == -1);
-  this.applyComponentChanges(currentClient.player,connectedClientsdata[eventData.data.id].currentKeyframe.positionComponent);
-  this.applyComponentChanges(currentClient.player,connectedClientsdata[eventData.data.id].currentKeyframe.rotationComponent);
+  currentClient.currentPosition = currentClient.timelineExtended.length;
+  console.log(currentClient.currentPosition);
+  currentClient.currentKeyframe = currentClient.timeline.find(keyframe=>keyframe.next == -1);
+  this.updatePositionPlayerFromFrame(currentClient);
 }
 
 serverSystem.goToNextFrame = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
-  connectedClientsdata[eventData.data.id].currentPosition+=60;
-  let newCurrentKeyframeid = connectedClientsdata[eventData.data.id].currentKeyframe.next;
-  connectedClientsdata[eventData.data.id].currentKeyframe = connectedClientsdata[eventData.data.id].timeline[newCurrentKeyframeid];
-  this.applyComponentChanges(currentClient.player,connectedClientsdata[eventData.data.id].currentKeyframe.positionComponent);
-  this.applyComponentChanges(currentClient.player,connectedClientsdata[eventData.data.id].currentKeyframe.rotationComponent);
+  newPosition = (Math.trunc(currentClient.currentPosition/60)+1)*60
+  currentClient.currentPosition = newPosition;
+  console.log(currentClient.currentPosition);
+  let newCurrentKeyframeid = currentClient.currentKeyframe.next;
+  currentClient.currentKeyframe = currentClient.timeline[newCurrentKeyframeid];
+  this.updatePositionPlayerFromFrame(currentClient);
 }
 
 serverSystem.goToPreviousFrame = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
-  connectedClientsdata[eventData.data.id].currentPosition-=60;
-  let newCurrentKeyframeid = connectedClientsdata[eventData.data.id].currentKeyframe.previous;
-  connectedClientsdata[eventData.data.id].currentKeyframe = connectedClientsdata[eventData.data.id].timeline[newCurrentKeyframeid];
-  this.applyComponentChanges(currentClient.player,connectedClientsdata[eventData.data.id].currentKeyframe.positionComponent);
-  this.applyComponentChanges(currentClient.player,connectedClientsdata[eventData.data.id].currentKeyframe.rotationComponent);
+  newPosition = (Math.trunc(currentClient.currentPosition/60)-1)*60
+  currentClient.currentPosition = newPosition;
+  console.log(currentClient.currentPosition);
+  let newCurrentKeyframeid = currentClient.currentKeyframe.previous;
+  currentClient.currentKeyframe = currentClient.timeline[newCurrentKeyframeid];
+  this.updatePositionPlayerFromFrame(currentClient);
 }
 
 serverSystem.goToPlay = function(eventData){
@@ -272,70 +273,71 @@ serverSystem.processMarkersUpdate = function(clientConnected){
 
 serverSystem.displayCurrentComponents = function(currentPlayer){
   if(currentPlayer.timelineExtended[currentPlayer.currentPosition]){
-    console.log(currentPlayer.timelineExtended[currentPlayer.currentPosition].rotationComponent.data.y);
+    console.log(currentPlayer.timelineExtended.length);
     this.applyComponentChanges(currentPlayer.player,currentPlayer.timelineExtended[currentPlayer.currentPosition].positionComponent);
     this.applyComponentChanges(currentPlayer.player,currentPlayer.timelineExtended[currentPlayer.currentPosition].rotationComponent);
     currentPlayer.currentPosition++;
+    console.log(currentClient.currentPosition);
   }else{
     currentPlayer.isPlayingSequence = false;
   }
 }
 
 serverSystem.generateSequence = function(eventData){
-  this.broadcastEvent("mcbestudio:openModal", this.createEventData("mcbestudio:openModal"));
-  modalEventData = this.createEventData("mcbestudio:updateModalValue");
   currentClient = connectedClientsdata[eventData.data.id];
-  px = new Array();
-  py = new Array();
-  pz = new Array();
-  rx = new Array();
-  ry = new Array();
-  modalEventData.data.currentState = 10;
-  this.broadcastEvent("mcbestudio:updateModalValue", modalEventData);
-  currentKeyframe = currentClient.timeline.find(keyframe=>keyframe.previous == -1);
-  next = currentKeyframe["current"];
-  while(currentKeyframe.next !=-1){
-    currentKeyframe = connectedClientsdata[eventData.data.id].timeline[next];
-    px.push(currentKeyframe.positionComponent.data.x);
-    py.push(currentKeyframe.positionComponent.data.y);
-    pz.push(currentKeyframe.positionComponent.data.z);
-    rx.push(currentKeyframe.rotationComponent.data.x);
-    ry.push(currentKeyframe.rotationComponent.data.y);
-    next = currentKeyframe.next;
+  if(currentClient.timeline.length>0){
+    this.broadcastEvent("mcbestudio:openModal", this.createEventData("mcbestudio:openModal"));
+    px = new Array();
+    py = new Array();
+    pz = new Array();
+    rx = new Array();
+    ry = new Array();
+    currentKeyframe = currentClient.timeline.find(keyframe=>keyframe.previous == -1);
+    next = currentKeyframe["current"];
+    while(currentKeyframe.next !=-1){
+      currentKeyframe = connectedClientsdata[eventData.data.id].timeline[next];
+      px.push(currentKeyframe.positionComponent.data.x);
+      py.push(currentKeyframe.positionComponent.data.y);
+      pz.push(currentKeyframe.positionComponent.data.z);
+      rx.push(currentKeyframe.rotationComponent.data.x);
+      ry.push(currentKeyframe.rotationComponent.data.y);
+      next = currentKeyframe.next;
+    }
+    pxe = this.subdiviseIntervals(px,60);
+    pye = this.subdiviseIntervals(py,60);
+    pze = this.subdiviseIntervals(pz,60);
+    rxe = this.subdiviseIntervals(rx,60);
+    rye = this.subdiviseIntervalsRotY(ry,60);
+    i = 0;
+    while(pxe[i]){
+      currentClient.timelineExtended[i] = new Object();
+      let positionComponent = this.getComponent(currentClient.player, "minecraft:position");
+      let rotationComponent = this.getComponent(currentClient.player, "minecraft:rotation");
+      positionComponent.data.x = pxe[i];
+      positionComponent.data.y = pye[i];
+      positionComponent.data.z = pze[i];
+      rotationComponent.data.x = rxe[i];
+      rotationComponent.data.y = rye[i];
+      currentClient.timelineExtended[i].positionComponent = positionComponent;
+      currentClient.timelineExtended[i].rotationComponent = rotationComponent;
+      i++;
+    }
+    modalEventData = this.createEventData("mcbestudio:updateModalValue");
+    modalEventData.data.currentState = 90;
+    this.broadcastEvent("mcbestudio:updateModalValue", modalEventData);
+    delete pxe;
+    delete pye;
+    delete pze;
+    delete rxe;
+    delete rye;
+    delete px;
+    delete py;
+    delete pz;
+    delete rx;
+    delete ry;
+    this.broadcastEvent("mcbestudio:closeModal", this.createEventData("mcbestudio:closeModal"));
   }
-  pxe = this.subdiviseIntervals(px,60);
-  pye = this.subdiviseIntervals(py,60);
-  pze = this.subdiviseIntervals(pz,60);
-  rxe = this.subdiviseIntervals(rx,60);
-  rye = this.subdiviseIntervalsRotY(ry,60);
-  i = 0;
-  while(pxe[i]){
-    currentClient.timelineExtended[i] = new Object();
-    let positionComponent = this.getComponent(currentClient.player, "minecraft:position");
-    let rotationComponent = this.getComponent(currentClient.player, "minecraft:rotation");
-    positionComponent.data.x = pxe[i];
-    positionComponent.data.y = pye[i];
-    positionComponent.data.z = pze[i];
-    rotationComponent.data.x = rxe[i];
-    rotationComponent.data.y = rye[i];
-    currentClient.timelineExtended[i].positionComponent = positionComponent;
-    currentClient.timelineExtended[i].rotationComponent = rotationComponent;
-    i++;
-  }
-  modalEventData = this.createEventData("mcbestudio:updateModalValue");
-  modalEventData.data.currentState = 90;
-  this.broadcastEvent("mcbestudio:updateModalValue", modalEventData);
-  delete pxe;
-  delete pye;
-  delete pze;
-  delete rxe;
-  delete rye;
-  delete px;
-  delete py;
-  delete pz;
-  delete rx;
-  delete ry;
-  this.broadcastEvent("mcbestudio:closeModal", this.createEventData("mcbestudio:closeModal"));
+  
 }
 
 
@@ -393,6 +395,13 @@ serverSystem.subdiviseIntervalsRotY = function(array,slices){
   }
   return newArray;
   
+}
+
+serverSystem.updatePositionPlayerFromFrame = function(currentClient){
+  if(currentClient.currentKeyframe){
+    this.applyComponentChanges(currentClient.player,currentClient.currentKeyframe.positionComponent);
+    this.applyComponentChanges(currentClient.player,currentClient.currentKeyframe.rotationComponent);
+  }
 }
 
 

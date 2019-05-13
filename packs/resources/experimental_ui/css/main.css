@@ -104,6 +104,12 @@ button:disabled{
 	background-position: center;
 }
 
+.playFull{
+	background-image: url("../assets/images/playfull.png");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
 .modal{
 	border: solid;
 	width:50%;

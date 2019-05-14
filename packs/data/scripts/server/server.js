@@ -72,11 +72,11 @@ serverSystem.onClientEnteredWorld = function (eventData) {
 serverSystem.onClientEnteredKeyFrameMode = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
   currentClient.isPlacingKeyframe = true;
-  let exitEntity = this.generateMarker(currentClient, "§cRetour menu",45,"exit");
+  let exitEntity = this.generateMarker(currentClient, "§cBack to menu",45,"exit");
   exitEntity.angle = 45;
   currentClient.markers[0] = exitEntity;
   
-  let keyframeEntity = this.generateMarker(currentClient, "§b Placer Keyframe",0,"manageKeyframe");
+  let keyframeEntity = this.generateMarker(currentClient, "§b Place Keyframe",0,"manageKeyframe");
   keyframeEntity.angle = 0;
   currentClient.markers[1] = keyframeEntity;
 
@@ -251,9 +251,9 @@ serverSystem.processMarkersUpdate = function(clientConnected){
       currentDistance = Math.sqrt(Math.pow(lastFrameObject.positionComponent.data.x-clientConnected.posX,2)+Math.pow(lastFrameObject.positionComponent.data.y-clientConnected.posY,2)+Math.pow(lastFrameObject.positionComponent.data.z-clientConnected.posZ,2));
       let entityToGenerateName = this.createComponent(clientConnected.markers[1],"minecraft:nameable");
       if(previousDistance !== currentDistance){
-        entityToGenerateName.data.name = "§b Placer Keyframe (" +Math.round((previousDistance/currentDistance)*100)/100 + ")";
+        entityToGenerateName.data.name = "§b Place Keyframe (" +Math.round((previousDistance/currentDistance)*100)/100 + ")";
       }else{
-        entityToGenerateName.data.name = "§b Placer Keyframe (infinity)";
+        entityToGenerateName.data.name = "§b Place Keyframe (infinity)";
       }
       
       entityToGenerateName.data.alwaysShow = true;

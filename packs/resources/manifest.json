@@ -4,7 +4,7 @@
         "description": "MCBE Studio",
         "name": "MCBE Studio",
         "uuid": "00b07d04-3873-493d-ae10-797a09d5b7b9",
-        "version": [1, 12, 0],
+        "version": [1, 12, 1],
         "min_engine_version" : [ 1, 12, 0 ]
     },
     "modules": [
@@ -12,7 +12,7 @@
             "description": "MCBE Studio",
             "type": "resources",
             "uuid": "d647b728-dd9a-4dcc-8589-e321ab4bb562",
-            "version": [1, 12, 0]
+            "version": [1, 12, 1]
         }
     ],
     "capabilities": [

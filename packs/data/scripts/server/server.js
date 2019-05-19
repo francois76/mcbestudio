@@ -2,6 +2,8 @@ const serverSystem = server.registerSystem(0, 0);
 const connectedClientsdata = new Array();
 const console = new Object();
 
+const frameRate = 240;
+
 /**
 * Initialisation du serveur
 */
@@ -17,13 +19,16 @@ serverSystem.initialize = function () {
   this.listenForEvent("mcbestudio:go_to_previous_frame", eventData => this.goToPreviousFrame(eventData));
   this.listenForEvent("mcbestudio:go_to_play", eventData => this.goToPlay(eventData));
   this.listenForEvent("mcbestudio:go_to_pause", eventData => this.goToPause(eventData));
-  this.registerEventData("mcbestudio:exit_place_keyframe_mode", {});
-  this.registerEventData("mcbestudio:updateFrameNumber", { frameNumber:0});
-  this.registerEventData("mcbestudio:openModal", {});
-  this.registerEventData("mcbestudio:closeModal", {});
-  this.registerEventData("mcbestudio:updateModalValue", { currentState:0});
-  this.registerComponent("mcbestudio:triggerer", { role:""});
-  this.registerComponent("mcbestudio:keyframe", { previous:0, next:0, current:0});
+  this.registerEventData("mcbestudio:exit_place_keyframe_mode", {targetClient:0});
+  this.registerEventData("mcbestudio:updateFrameNumber", {targetClient:0, frameNumber:0});
+  this.registerEventData("mcbestudio:openModal", {targetClient:0});
+  this.registerEventData("mcbestudio:closeModal", {targetClient:0});
+  this.registerEventData("mcbestudio:updateModalValue", { targetClient:0, currentState:0});
+  this.registerEventData("mcbestudio:leaveFullScreen", {targetClient:0});
+  this.registerEventData("mcbestudio:notifySequenceEnded", {targetClient:0});
+  this.registerEventData("mcbestudio:notifyCurrentFrame", {targetClient:0, currentFrame:0});
+  this.registerComponent("mcbestudio:triggerer", { targetClient:0, role:""});
+  this.registerComponent("mcbestudio:keyframe", { targetClient:0, previous:0, next:0, current:0});
 };
 
 /**
@@ -65,7 +70,8 @@ serverSystem.onClientEnteredWorld = function (eventData) {
   connectedClientsdata[eventData.data.player.id].currentPosition = 0; //Indique le numéro de frame courante, incrémental peu importe les id (utile pour la timeline)
   connectedClientsdata[eventData.data.player.id].frameNumber = 0; //Nombre total de frame(utile pour la timeline)
   connectedClientsdata[eventData.data.player.id].currentKeyframe = null; //Indique la keyframe courante
-  connectedClientsdata[eventData.data.player.id].isPlayingSequence = false; //Indique la keyframe courante
+  connectedClientsdata[eventData.data.player.id].isPlayingSequence = false; //Notify if the client is playing the sequence
+  connectedClientsdata[eventData.data.player.id].isPlayingSequenceFullScreen = false; //Notify if the client is playing the sequence full screen
   connectedClientsdata[eventData.data.player.id].timelineExtended = new Array(); //Permet de stocker la timeline "complète" avec toute les transitions
 };
 
@@ -98,6 +104,7 @@ serverSystem.onEntityHit = function(eventData){
       if(triggererComponent.data.role == "exit"){
         currentClient.isPlacingKeyframe = false;
         const placeEventData = this.createEventData("mcbestudio:exit_place_keyframe_mode");
+        placeEventData.data.targetClient = eventData.data.player.id;
         this.broadcastEvent("mcbestudio:exit_place_keyframe_mode", placeEventData );
         currentClient.markers.forEach(marker => {
           this.destroyEntity(marker);
@@ -169,6 +176,7 @@ serverSystem.generateKeyframe = function(currentClient){
   currentClient.frameNumber++;
   let frameNumberEventdata = this.createEventData("mcbestudio:updateFrameNumber");
   frameNumberEventdata.data.frameNumber = currentClient.frameNumber;
+  frameNumberEventdata.data.targetClient = currentClient.player.id;
   this.broadcastEvent("mcbestudio:updateFrameNumber",frameNumberEventdata);
   this.applyComponentChanges(entityToGenerate,keyFrameData);
   this.executeCommand("/effect @e[type=mcbestudio:marker] fire_resistance 99999 255",(commandData) => this.commandCallback(commandData));
@@ -186,16 +194,14 @@ serverSystem.goToFirstFrame = function(eventData){
 serverSystem.goToLastFrame = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
   currentClient.currentPosition = currentClient.timelineExtended.length;
-  console.log(currentClient.currentPosition);
   currentClient.currentKeyframe = currentClient.timeline.find(keyframe=>keyframe.next == -1);
   this.updatePositionPlayerFromFrame(currentClient);
 }
 
 serverSystem.goToNextFrame = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
-  newPosition = (Math.trunc(currentClient.currentPosition/60)+1)*60
+  newPosition = (Math.trunc(currentClient.currentPosition/frameRate)+1)*frameRate
   currentClient.currentPosition = newPosition;
-  console.log(currentClient.currentPosition);
   let newCurrentKeyframeid = currentClient.currentKeyframe.next;
   currentClient.currentKeyframe = currentClient.timeline[newCurrentKeyframeid];
   this.updatePositionPlayerFromFrame(currentClient);
@@ -203,9 +209,8 @@ serverSystem.goToNextFrame = function(eventData){
 
 serverSystem.goToPreviousFrame = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
-  newPosition = (Math.trunc(currentClient.currentPosition/60)-1)*60
+  newPosition = (Math.trunc(currentClient.currentPosition/frameRate)-1)*frameRate
   currentClient.currentPosition = newPosition;
-  console.log(currentClient.currentPosition);
   let newCurrentKeyframeid = currentClient.currentKeyframe.previous;
   currentClient.currentKeyframe = currentClient.timeline[newCurrentKeyframeid];
   this.updatePositionPlayerFromFrame(currentClient);
@@ -213,6 +218,11 @@ serverSystem.goToPreviousFrame = function(eventData){
 
 serverSystem.goToPlay = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
+  if(eventData.data.isFullScreen == true){
+    currentClient.isPlayingSequenceFullScreen = true;
+  }else{
+    currentClient.isPlayingSequenceFullScreen = false;
+  }
   currentClient.isPlayingSequence = true;
 }
 
@@ -271,27 +281,45 @@ serverSystem.processMarkersUpdate = function(clientConnected){
 }
 
 
-serverSystem.displayCurrentComponents = function(currentPlayer){
-  if(currentPlayer.timelineExtended[currentPlayer.currentPosition]){
-    console.log(currentPlayer.timelineExtended.length);
-    this.applyComponentChanges(currentPlayer.player,currentPlayer.timelineExtended[currentPlayer.currentPosition].positionComponent);
-    this.applyComponentChanges(currentPlayer.player,currentPlayer.timelineExtended[currentPlayer.currentPosition].rotationComponent);
-    currentPlayer.currentPosition++;
-    console.log(currentClient.currentPosition);
+serverSystem.displayCurrentComponents = function(currentClient){
+  if(currentClient.timelineExtended[currentClient.currentPosition]){
+    this.applyComponentChanges(currentClient.player,currentClient.timelineExtended[currentClient.currentPosition].positionComponent);
+    this.applyComponentChanges(currentClient.player,currentClient.timelineExtended[currentClient.currentPosition].rotationComponent);
+    currentClient.currentPosition++;
+    notifyCurrentFrameEventData = this.createEventData("mcbestudio:notifyCurrentFrame");
+    notifyCurrentFrameEventData.data.targetClient = currentClient.player.id;
+    notifyCurrentFrameEventData.data.currentFrame = currentClient.currentPosition;
+    this.broadcastEvent("mcbestudio:notifyCurrentFrame",notifyCurrentFrameEventData);
   }else{
-    currentPlayer.isPlayingSequence = false;
+    currentClient.isPlayingSequence = false;
+    if(currentClient.isPlayingSequenceFullScreen){
+      currentClient.isPlayingSequenceFullScreen = false;
+      leaveFullScreenEventData = this.createEventData("mcbestudio:leaveFullScreen");
+      leaveFullScreenEventData.data.targetClient = currentClient.player.id;
+      this.broadcastEvent("mcbestudio:leaveFullScreen",leaveFullScreenEventData);
+    }else{
+      notifySequenceEndedEventData = this.createEventData("mcbestudio:notifySequenceEnded");
+      notifySequenceEndedEventData.data.targetClient = currentClient.player.id;
+      this.broadcastEvent("mcbestudio:notifySequenceEnded",notifySequenceEndedEventData);
+    }
   }
 }
 
 serverSystem.generateSequence = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
   if(currentClient.timeline.length>0){
-    this.broadcastEvent("mcbestudio:openModal", this.createEventData("mcbestudio:openModal"));
+    openModalEventData = this.createEventData("mcbestudio:openModal");
+    updateModalEventData = this.createEventData("mcbestudio:updateModalValue");
+    updateModalEventData.data.targetClient = eventData.data.id;
+    openModalEventData.data.targetClient = eventData.data.id;
+    this.broadcastEvent("mcbestudio:openModal", openModalEventData);
     px = new Array();
     py = new Array();
     pz = new Array();
     rx = new Array();
     ry = new Array();
+    updateModalEventData.data.currentState = 10;
+    this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
     currentKeyframe = currentClient.timeline.find(keyframe=>keyframe.previous == -1);
     next = currentKeyframe["current"];
     while(currentKeyframe.next !=-1){
@@ -303,11 +331,15 @@ serverSystem.generateSequence = function(eventData){
       ry.push(currentKeyframe.rotationComponent.data.y);
       next = currentKeyframe.next;
     }
-    pxe = this.subdiviseIntervals(px,60);
-    pye = this.subdiviseIntervals(py,60);
-    pze = this.subdiviseIntervals(pz,60);
-    rxe = this.subdiviseIntervals(rx,60);
-    rye = this.subdiviseIntervalsRotY(ry,60);
+    updateModalEventData.data.currentState = 30;
+    this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
+    pxe = this.subdiviseIntervals(px,frameRate);
+    pye = this.subdiviseIntervals(py,frameRate);
+    pze = this.subdiviseIntervals(pz,frameRate);
+    rxe = this.subdiviseIntervals(rx,frameRate);
+    rye = this.subdiviseIntervalsRotY(ry,frameRate);
+    updateModalEventData.data.currentState = 60;
+    this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
     i = 0;
     while(pxe[i]){
       currentClient.timelineExtended[i] = new Object();
@@ -322,9 +354,8 @@ serverSystem.generateSequence = function(eventData){
       currentClient.timelineExtended[i].rotationComponent = rotationComponent;
       i++;
     }
-    modalEventData = this.createEventData("mcbestudio:updateModalValue");
-    modalEventData.data.currentState = 90;
-    this.broadcastEvent("mcbestudio:updateModalValue", modalEventData);
+    updateModalEventData.data.currentState = 90;
+    this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
     delete pxe;
     delete pye;
     delete pze;
@@ -335,7 +366,9 @@ serverSystem.generateSequence = function(eventData){
     delete pz;
     delete rx;
     delete ry;
-    this.broadcastEvent("mcbestudio:closeModal", this.createEventData("mcbestudio:closeModal"));
+    closeModalEventData = this.createEventData("mcbestudio:closeModal");
+    closeModalEventData.data.targetClient = eventData.data.id;
+    this.broadcastEvent("mcbestudio:closeModal",closeModalEventData );
   }
   
 }

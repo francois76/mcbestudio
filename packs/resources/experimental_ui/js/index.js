@@ -20,6 +20,7 @@ let exitButton = document.getElementById("exitButton");
 let placeKeyframeButton = document.getElementById("placeKeyframeButton");
 let generateSequenceButton = document.getElementById("generateSequenceButton");
 let playPauseButton = document.getElementById("playPauseButton");
+let playFullButton = document.getElementById("playFullButton");
 let firstFrameButton = document.getElementById("firstFrameButton");
 let previousFrameButton = document.getElementById("previousFrameButton");
 let nextFrameButton = document.getElementById("nextFrameButton");
@@ -50,6 +51,10 @@ playPauseButton.addEventListener("click", function () {
     }else{
         buttonCallback("play");
     }
+});
+
+playFullButton.addEventListener("click", function () {
+	buttonCallback("playFull");
 });
     
 firstFrameButton.addEventListener("click", function () {
@@ -113,5 +118,14 @@ updateKeyFrameNumber = function(keyFrameNumberServer){
 
 engine.on("mcbestudio:updateFrameNumberUi", function(frameNumberEventdata){
     updateKeyFrameNumber(frameNumberEventdata);
+    document.getElementById("timeline").textContent = generateUpdatedTimeline();
+});
+
+engine.on("mcbestudio:switchPlayToPause", function(frameNumberEventdata){
+    updateButtonImage();
+});
+
+engine.on("mcbestudio:notifyCurrentFrame", function(currentFrame){
+    currentKeyFrame = (currentFrame/240) + 1;
     document.getElementById("timeline").textContent = generateUpdatedTimeline();
 });

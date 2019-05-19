@@ -25,6 +25,18 @@ const initUiOptions = {
   } 
 }
 
+const blankScreenOptions = {
+  path: 'blank.html', options: {
+    always_accepts_input: false,
+    render_game_behind: true,
+    absorbs_input: true,
+    is_showing_menu: false,
+    should_steal_mouse: false,
+    force_render_below: false,
+    render_only_when_topmost: false 
+  } 
+}
+
 const progressBarOptions = {
   path: 'progressBar.html', options: {
     always_accepts_input: false,
@@ -47,6 +59,9 @@ clientSystem.initialize = function () {
   this.listenForEvent("mcbestudio:openModal",  (eventData) => this.openModal(eventData));
   this.listenForEvent("mcbestudio:closeModal",  (eventData) => this.closeModal(eventData));
   this.listenForEvent("mcbestudio:updateModalValue",  (eventData) => this.updateModal(eventData));
+  this.listenForEvent("mcbestudio:leaveFullScreen",  (eventData) => this.leaveFullScreen(eventData));
+  this.listenForEvent("mcbestudio:notifySequenceEnded",  (eventData) => this.notifySequenceEnded(eventData));
+  this.listenForEvent("mcbestudio:notifyCurrentFrame",  (eventData) => this.notifyCurrentFrame(eventData));
   this.registerEventData("mcbestudio:enter_place_keyframe_mode", {});
   this.registerEventData("mcbestudio:client_entered_world", {});
   this.registerEventData("mcbestudio:generate_sequence", {});
@@ -54,7 +69,7 @@ clientSystem.initialize = function () {
   this.registerEventData("mcbestudio:go_to_last_frame", {});
   this.registerEventData("mcbestudio:go_to_next_frame", {});
   this.registerEventData("mcbestudio:go_to_previous_frame", {});
-  this.registerEventData("mcbestudio:go_to_play", {});
+  this.registerEventData("mcbestudio:go_to_play", {isFullScreen:false});
   this.registerEventData("mcbestudio:go_to_pause", {});
   this.registerEventData("mcbestudio:updateFrameNumberUi", { frameNumber:0});
 };
@@ -108,6 +123,8 @@ clientSystem.onUIMessage = function (eventDataObject) {
     this.goToPlay();
   }else if(eventData === "pause"){
     this.goToPause();
+  }else if(eventData === "playFull"){
+    this.goToPlayFull();
   }else{
     console.log(eventData);
   }
@@ -144,8 +161,10 @@ clientSystem.onEnterPlaceKeyframeMode = function(){
 };
 
 clientSystem.onClientExitKeyFrameMode = function(eventData){
-  var loadUiEvent = this.handleEventData('minecraft:load_ui', indexUiOptions);
-  this.broadcastEvent('minecraft:load_ui', loadUiEvent);
+  if(eventData.data.targetClient == clientId){
+    var loadUiEvent = this.handleEventData('minecraft:load_ui', indexUiOptions);
+    this.broadcastEvent('minecraft:load_ui', loadUiEvent);
+  }
 }
 
 
@@ -192,13 +211,16 @@ clientSystem.indexUiOpened = function(){
 }
 
 clientSystem.updateFrameNumberUi = function(eventData){
-  this.frameNumber = eventData.data.frameNumber;
+  if(eventData.data.targetClient == clientId){
+    this.frameNumber = eventData.data.frameNumber;
+  }
 }
 
 clientSystem.goToPlay = function(){
   let eventData = this.createEventData("mcbestudio:go_to_play");
   eventData.data = new Object(); 
   eventData.data.id = clientId;
+  eventData.data.isFullScreen = false;
   this.broadcastEvent("mcbestudio:go_to_play",eventData);
 }
 
@@ -209,24 +231,67 @@ clientSystem.goToPause = function(){
   this.broadcastEvent("mcbestudio:go_to_pause",eventData);
 }
 
-clientSystem.openModal = function(eventData){
-  var loadUiEvent = this.handleEventData('minecraft:load_ui', progressBarOptions);
+clientSystem.goToPlayFull = function(){
+  var loadUiEvent = this.handleEventData('minecraft:load_ui', blankScreenOptions
+  );
   this.broadcastEvent('minecraft:load_ui', loadUiEvent);
+  let eventData = this.createEventData("mcbestudio:go_to_play");
+  eventData.data = new Object(); 
+  eventData.data.id = clientId;
+  eventData.data.isFullScreen = true;
+  this.broadcastEvent("mcbestudio:go_to_play",eventData);
+}
+
+clientSystem.openModal = function(eventData){
+  if(eventData.data.targetClient == clientId){
+    var loadUiEvent = this.handleEventData('minecraft:load_ui', progressBarOptions);
+    this.broadcastEvent('minecraft:load_ui', loadUiEvent);
+  }
 }
 
 
 clientSystem.closeModal = function(eventData){
-  let unloadEventData = this.createEventData("minecraft:unload_ui");    
-  unloadEventData.data.path = "progressBar.html";
-  this.broadcastEvent("minecraft:unload_ui", unloadEventData);
+  if(eventData.data.targetClient == clientId){
+    let unloadEventData = this.createEventData("minecraft:unload_ui");    
+    unloadEventData.data.path = "progressBar.html";
+    this.broadcastEvent("minecraft:unload_ui", unloadEventData);
+  }
 }
 
 
 clientSystem.updateModal = function(eventData){
-  let uiEventData = this.createEventData("minecraft:send_ui_event");
-  uiEventData.data.eventIdentifier = "mcbestudio:updateModal";
-  uiEventData.data.data = eventData.data.currentState;
-  this.broadcastEvent("minecraft:send_ui_event",uiEventData);
+  if(eventData.data.targetClient == clientId){
+    let uiEventData = this.createEventData("minecraft:send_ui_event");
+    uiEventData.data.eventIdentifier = "mcbestudio:updateModal";
+    uiEventData.data.data = eventData.data.currentState;
+    console.log(uiEventData);
+    this.broadcastEvent("minecraft:send_ui_event",uiEventData);
+  }
+}
+
+clientSystem.leaveFullScreen = function(eventData){
+  if(eventData.data.targetClient == clientId){
+    let unloadEventData = this.createEventData("minecraft:unload_ui");    
+    unloadEventData.data.path = "blank.html";
+    this.broadcastEvent("minecraft:unload_ui", unloadEventData);
+  } 
+}
+
+clientSystem.notifySequenceEnded = function(eventData){
+  if(eventData.data.targetClient == clientId){
+    let uiEventData = this.createEventData("minecraft:send_ui_event");
+    uiEventData.data.eventIdentifier = "mcbestudio:switchPlayToPause";
+    this.broadcastEvent("minecraft:send_ui_event",uiEventData);
+  } 
+}
+
+clientSystem.notifyCurrentFrame = function(eventData){
+  if(eventData.data.targetClient == clientId){
+    let uiEventData = this.createEventData("minecraft:send_ui_event");
+    uiEventData.data.eventIdentifier = "mcbestudio:notifyCurrentFrame";
+    uiEventData.data.data = eventData.data.currentFrame;
+    this.broadcastEvent("minecraft:send_ui_event",uiEventData);
+  } 
 }
 
 

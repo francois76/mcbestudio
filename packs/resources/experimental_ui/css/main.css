@@ -20,20 +20,28 @@ body {
 }
 
 
-button {
+.fake-button {
+	border:none;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left:0px;
+	padding-right:0px;
+}
+
+.real-button:hover{
+	background-color: #4AD95C;
+}
+
+.real-button:disabled{
+	background-color: #313131;
+}
+
+.real-button{
 	font-size: 20px;
 	font-family: "MinecraftFive";
 	background-color: #31B23D;
 	color: white;
-	border-color: #24241B;
-}
-
-button:hover{
-	background-color: #4AD95C;
-}
-
-button:disabled{
-	background-color: #313131;
+	border-color: #24241B;	
 }
 
 .title-button-alignleft{
@@ -131,35 +139,17 @@ button:disabled{
 }
 
 .modal{
-	border: solid;
 	width:50%;
-	height:50%;
-	background-color: silver;
+	height:40%;
 	display:flex;
 	flex-direction: column;
 	align-items:center;
 	justify-content: center;
-}
-.modal-title{
-	width:100%;
-	height: 20%;
-}
-
-.spacer-bottom-modal{
-	height: 60%;
-}
-
-.progress-bar{
+	background-repeat: no-repeat;
+	background-position: center;
 	border:solid;
-	width:80%;
-	height: 10%;
-	margin-top: 10%;
-}
-
-.inner-bar{
-	width:0%;
-	height: 100%;
-	background-color: yellowgreen;
+	border-color: black;
+	background-image: url("../assets/images/modal_0.png");
 }
 
 p{

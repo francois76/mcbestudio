@@ -19,6 +19,7 @@ serverSystem.initialize = function () {
   this.listenForEvent("mcbestudio:go_to_previous_frame", eventData => this.goToPreviousFrame(eventData));
   this.listenForEvent("mcbestudio:go_to_play", eventData => this.goToPlay(eventData));
   this.listenForEvent("mcbestudio:go_to_pause", eventData => this.goToPause(eventData));
+  this.listenForEvent("mcbestudio:progressBarOpened", eventData => this.progressBarOpened(eventData));
   this.registerEventData("mcbestudio:exit_place_keyframe_mode", {targetClient:0});
   this.registerEventData("mcbestudio:updateFrameNumber", {targetClient:0, frameNumber:0});
   this.registerEventData("mcbestudio:openModal", {targetClient:0});
@@ -309,68 +310,82 @@ serverSystem.generateSequence = function(eventData){
   currentClient = connectedClientsdata[eventData.data.id];
   if(currentClient.timeline.length>0){
     openModalEventData = this.createEventData("mcbestudio:openModal");
-    updateModalEventData = this.createEventData("mcbestudio:updateModalValue");
-    updateModalEventData.data.targetClient = eventData.data.id;
     openModalEventData.data.targetClient = eventData.data.id;
     this.broadcastEvent("mcbestudio:openModal", openModalEventData);
-    px = new Array();
-    py = new Array();
-    pz = new Array();
-    rx = new Array();
-    ry = new Array();
-    updateModalEventData.data.currentState = 10;
-    this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
-    currentKeyframe = currentClient.timeline.find(keyframe=>keyframe.previous == -1);
-    next = currentKeyframe["current"];
-    while(currentKeyframe.next !=-1){
-      currentKeyframe = connectedClientsdata[eventData.data.id].timeline[next];
-      px.push(currentKeyframe.positionComponent.data.x);
-      py.push(currentKeyframe.positionComponent.data.y);
-      pz.push(currentKeyframe.positionComponent.data.z);
-      rx.push(currentKeyframe.rotationComponent.data.x);
-      ry.push(currentKeyframe.rotationComponent.data.y);
-      next = currentKeyframe.next;
-    }
-    updateModalEventData.data.currentState = 30;
-    this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
-    pxe = this.subdiviseIntervals(px,frameRate);
-    pye = this.subdiviseIntervals(py,frameRate);
-    pze = this.subdiviseIntervals(pz,frameRate);
-    rxe = this.subdiviseIntervals(rx,frameRate);
-    rye = this.subdiviseIntervalsRotY(ry,frameRate);
-    updateModalEventData.data.currentState = 60;
-    this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
-    i = 0;
-    while(pxe[i]){
-      currentClient.timelineExtended[i] = new Object();
-      let positionComponent = this.getComponent(currentClient.player, "minecraft:position");
-      let rotationComponent = this.getComponent(currentClient.player, "minecraft:rotation");
-      positionComponent.data.x = pxe[i];
-      positionComponent.data.y = pye[i];
-      positionComponent.data.z = pze[i];
-      rotationComponent.data.x = rxe[i];
-      rotationComponent.data.y = rye[i];
-      currentClient.timelineExtended[i].positionComponent = positionComponent;
-      currentClient.timelineExtended[i].rotationComponent = rotationComponent;
-      i++;
-    }
-    updateModalEventData.data.currentState = 90;
-    this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
-    delete pxe;
-    delete pye;
-    delete pze;
-    delete rxe;
-    delete rye;
-    delete px;
-    delete py;
-    delete pz;
-    delete rx;
-    delete ry;
-    closeModalEventData = this.createEventData("mcbestudio:closeModal");
-    closeModalEventData.data.targetClient = eventData.data.id;
-    this.broadcastEvent("mcbestudio:closeModal",closeModalEventData );
   }
   
+}
+
+serverSystem.progressBarOpened = function(eventData){
+  currentClient = connectedClientsdata[eventData.data.clientId];
+  updateModalEventData = this.createEventData("mcbestudio:updateModalValue");
+  updateModalEventData.data.targetClient = eventData.data.clientId;
+  px = new Array();
+  py = new Array();
+  pz = new Array();
+  rx = new Array();
+  ry = new Array();
+  updateModalEventData.data.currentState = 10;
+  this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
+  currentKeyframe = currentClient.timeline.find(keyframe=>keyframe.previous == -1);
+  next = currentKeyframe["current"];
+  while(currentKeyframe.next !=-1){
+    currentKeyframe = currentClient.timeline[next];
+    px.push(currentKeyframe.positionComponent.data.x);
+    py.push(currentKeyframe.positionComponent.data.y);
+    pz.push(currentKeyframe.positionComponent.data.z);
+    rx.push(currentKeyframe.rotationComponent.data.x);
+    ry.push(currentKeyframe.rotationComponent.data.y);
+    next = currentKeyframe.next;
+  }
+  updateModalEventData.data.currentState = 30;
+  this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
+  pxe = this.subdiviseIntervals(px,frameRate);
+  updateModalEventData.data.currentState = 40;
+  this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
+  pye = this.subdiviseIntervals(py,frameRate);
+  updateModalEventData.data.currentState = 50;
+  this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
+  pze = this.subdiviseIntervals(pz,frameRate);
+  updateModalEventData.data.currentState = 60;
+  this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
+  rxe = this.subdiviseIntervals(rx,frameRate);
+  updateModalEventData.data.currentState = 70;
+  this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData); 
+  rye = this.subdiviseIntervalsRotY(ry,frameRate);
+  updateModalEventData.data.currentState = 80;
+  this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);  
+  i = 0;
+  while(pxe[i]){
+    currentClient.timelineExtended[i] = new Object();
+    let positionComponent = this.getComponent(currentClient.player, "minecraft:position");
+    let rotationComponent = this.getComponent(currentClient.player, "minecraft:rotation");
+    positionComponent.data.x = pxe[i];
+    positionComponent.data.y = pye[i];
+    positionComponent.data.z = pze[i];
+    rotationComponent.data.x = rxe[i];
+    rotationComponent.data.y = rye[i];
+    currentClient.timelineExtended[i].positionComponent = positionComponent;
+    currentClient.timelineExtended[i].rotationComponent = rotationComponent;
+    i++;
+  }
+  updateModalEventData.data.currentState = 90;
+  this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
+  delete pxe;
+  delete pye;
+  delete pze;
+  delete rxe;
+  delete rye;
+  delete px;
+  delete py;
+  delete pz;
+  delete rx;
+  delete ry;
+  updateModalEventData.data.currentState = 100;
+  this.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
+  closeModalEventData = this.createEventData("mcbestudio:closeModal");
+  closeModalEventData.data.targetClient = eventData.data.clientId;
+  this.broadcastEvent("mcbestudio:closeModal",closeModalEventData );
 }
 
 

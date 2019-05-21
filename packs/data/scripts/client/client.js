@@ -72,6 +72,7 @@ clientSystem.initialize = function () {
   this.registerEventData("mcbestudio:go_to_play", {isFullScreen:false});
   this.registerEventData("mcbestudio:go_to_pause", {});
   this.registerEventData("mcbestudio:updateFrameNumberUi", { frameNumber:0});
+  this.registerEventData("mcbestudio:progressBarOpened", { clientId:0});
 };
 
 
@@ -125,6 +126,8 @@ clientSystem.onUIMessage = function (eventDataObject) {
     this.goToPause();
   }else if(eventData === "playFull"){
     this.goToPlayFull();
+  }else if(eventData === "progressBarOpened"){
+    this.progressBarOpened();
   }else{
     console.log(eventData);
   }
@@ -264,7 +267,6 @@ clientSystem.updateModal = function(eventData){
     let uiEventData = this.createEventData("minecraft:send_ui_event");
     uiEventData.data.eventIdentifier = "mcbestudio:updateModal";
     uiEventData.data.data = eventData.data.currentState;
-    console.log(uiEventData);
     this.broadcastEvent("minecraft:send_ui_event",uiEventData);
   }
 }
@@ -292,6 +294,12 @@ clientSystem.notifyCurrentFrame = function(eventData){
     uiEventData.data.data = eventData.data.currentFrame;
     this.broadcastEvent("minecraft:send_ui_event",uiEventData);
   } 
+}
+
+clientSystem.progressBarOpened = function(){
+  progressBarOpenedEventData = this.createEventData("mcbestudio:progressBarOpened");
+  progressBarOpenedEventData.data.clientId = clientId;
+  this.broadcastEvent("mcbestudio:progressBarOpened",progressBarOpenedEventData)
 }
 
 

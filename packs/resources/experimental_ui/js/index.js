@@ -121,11 +121,14 @@ engine.on("mcbestudio:updateFrameNumberUi", function(frameNumberEventdata){
     document.getElementById("timeline").textContent = generateUpdatedTimeline();
 });
 
-engine.on("mcbestudio:switchPlayToPause", function(frameNumberEventdata){
+engine.on("mcbestudio:switchPlayToPause", function(eventdata){
     updateButtonImage();
 });
 
 engine.on("mcbestudio:notifyCurrentFrame", function(currentFrame){
     currentKeyFrame = (currentFrame/240) + 1;
     document.getElementById("timeline").textContent = generateUpdatedTimeline();
+});
+
+engine.on("mcbestudio:updateModal", function(newSize){
 });

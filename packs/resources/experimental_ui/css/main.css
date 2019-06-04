@@ -37,22 +37,23 @@ body {
 }
 
 .real-button{
-	font-size: 20px;
+	font-size: 2vh;
 	font-family: "MinecraftFive";
 	background-color: #31B23D;
 	color: white;
-	border-color: #24241B;	
+	border-color: #24241B;
+	border-width: 0.2vh;
 }
 
 .title-button-alignleft{
-	width:20vh;
+	width:10vw;
 	height: 10vh;
 }
 
 .title-button-alignright{
-	width:20vh;
+	width:10vw;
 	height: 10vh;
-	margin-left: 2vh;
+	margin-left: 1vw;
 }
 
 
@@ -60,51 +61,52 @@ body {
 .titlebar{
 	padding: 0;
 	margin: 0;
-	margin-left: 2%;
+	left: 6vw;
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
 	align-items: flex-start;
 	position: absolute;
-	top: 36px;
-	height: 36px;
+	top: 3vh;
+	height: 3vh;
 }
 
 .open-spacer{
-	width: 150vh;
+	width: 88vw;
 }
 
 .titlebar-spacer{
-	width: 90vh;	
+	width: 45vw;	
 }
 
 .player{
 	padding: 0;
 	margin: 0;
-	margin-left: 2%;
+	margin-left: 1vw;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
 	align-items: center;
 	position: absolute;
-	bottom: 36px;
-	height: 36px;
+	bottom: 4vh;
+	height: 4vh;
 }
 
 .timeline-button{
-	width:5vh;
+	width:3vw;
 	height: 5vh;
-	margin-left: 2px;
-	margin-right: 2px;
+	margin-left: 0.3vw;
+	margin-right: 0.3vw;
 	background-repeat: no-repeat;
 	background-position: center;	
+	background-size: 75%;
 }
 
 .timeline{
-	font-size: 20pt;
+	font-size: 3vh;
 	background-color: #24241B;
 	color: white;
-	margin-bottom: 2px;
+	margin-bottom: 1vh;
 }
 
 .timeline-control{
@@ -139,25 +141,18 @@ body {
 }
 
 .modal{
-	width:50%;
-	height:40%;
+	width:50vw;
+	height:40vh;
 	display:flex;
 	flex-direction: column;
 	align-items:center;
 	justify-content: center;
 	background-repeat: no-repeat;
 	background-position: center;
-	border:solid;
-	border-color: black;
+	background-size: 100%;
+	border:none;
 	background-image: url("../assets/images/modal_0.png");
 }
-
-p{
-	font-family: "MinecraftFive";
-	font-size: 40px;
-	padding-left: 10%;
-}
-
 
 
 

@@ -13,6 +13,7 @@ serverSystem.initialize = function () {
   this.listenForEvent("mcbestudio:client_entered_world", eventData => this.onClientEnteredWorld(eventData));
   this.listenForEvent("mcbestudio:enter_place_keyframe_mode", eventData => this.onClientEnteredKeyFrameMode(eventData));
   this.listenForEvent("mcbestudio:generate_sequence", eventData => this.generateSequence(eventData));
+  this.listenForEvent("mcbestudio:delete_sequence", eventData => this.deleteSequence(eventData));
   this.listenForEvent("mcbestudio:go_to_first_frame", eventData => this.goToFirstFrame(eventData));
   this.listenForEvent("mcbestudio:go_to_last_frame", eventData => this.goToLastFrame(eventData));
   this.listenForEvent("mcbestudio:go_to_next_frame", eventData => this.goToNextFrame(eventData));
@@ -57,23 +58,15 @@ serverSystem.onClientEnteredWorld = function (eventData) {
   let playerRotationComponent = this.getComponent(eventData.data.player, "minecraft:rotation");
   //On initialise toute les infos de sauvegarde liées à un joueur
   connectedClientsdata[eventData.data.player.id] = new Object();
-  connectedClientsdata[eventData.data.player.id].isPlacingKeyframe = false; //true si le joueur est en mode "placer des keyframe"
-  connectedClientsdata[eventData.data.player.id].player = eventData.data.player; //Contient la référence du joueur
-  connectedClientsdata[eventData.data.player.id].rotX = playerRotationComponent.data.x; //Position x du joueur
-  connectedClientsdata[eventData.data.player.id].rotY = playerRotationComponent.data.y; //Position y du joueur
-  connectedClientsdata[eventData.data.player.id].posX = playerPositionComponent.data.x; //Position z du joueur
-  connectedClientsdata[eventData.data.player.id].posY = playerPositionComponent.data.y; //Rotation y du joueur
-  connectedClientsdata[eventData.data.player.id].posZ = playerPositionComponent.data.z; //Rotation z du joueur
-  connectedClientsdata[eventData.data.player.id].markers = new Array(); //Permet de stocker les markers
-  connectedClientsdata[eventData.data.player.id].timeline = new Array(); //Permet de stocker la timeline
-  connectedClientsdata[eventData.data.player.id].lastframe = -1; //Permet de connaitre l'ID de la dernière frame sauvegardée. Vaut -1 si aucune sauvegardée
-  connectedClientsdata[eventData.data.player.id].counter = 0; //Compteur incrémental assignant un ID aux nouvelles frames
-  connectedClientsdata[eventData.data.player.id].currentPosition = 0; //Indique le numéro de frame courante, incrémental peu importe les id (utile pour la timeline)
-  connectedClientsdata[eventData.data.player.id].frameNumber = 0; //Nombre total de frame(utile pour la timeline)
-  connectedClientsdata[eventData.data.player.id].currentKeyframe = null; //Indique la keyframe courante
-  connectedClientsdata[eventData.data.player.id].isPlayingSequence = false; //Notify if the client is playing the sequence
-  connectedClientsdata[eventData.data.player.id].isPlayingSequenceFullScreen = false; //Notify if the client is playing the sequence full screen
-  connectedClientsdata[eventData.data.player.id].timelineExtended = new Array(); //Permet de stocker la timeline "complète" avec toute les transitions
+  currentClient = connectedClientsdata[eventData.data.player.id];
+  currentClient.isPlacingKeyframe = false; //true si le joueur est en mode "placer des keyframe"
+  currentClient.player = eventData.data.player; //Contient la référence du joueur
+  currentClient.rotX = playerRotationComponent.data.x; //Position x du joueur
+  currentClient.rotY = playerRotationComponent.data.y; //Position y du joueur
+  currentClient.posX = playerPositionComponent.data.x; //Position z du joueur
+  currentClient.posY = playerPositionComponent.data.y; //Rotation y du joueur
+  currentClient.posZ = playerPositionComponent.data.z; //Rotation z du joueur
+  this.initClientTimelineData(currentClient);
 };
 
 serverSystem.onClientEnteredKeyFrameMode = function(eventData){
@@ -313,7 +306,11 @@ serverSystem.generateSequence = function(eventData){
     openModalEventData.data.targetClient = eventData.data.id;
     this.broadcastEvent("mcbestudio:openModal", openModalEventData);
   }
-  
+}
+
+serverSystem.deleteSequence = function(eventData){
+  currentClient = connectedClientsdata[eventData.data.id];
+  this.initClientTimelineData(currentClient);
 }
 
 serverSystem.progressBarOpened = function(eventData){
@@ -450,6 +447,19 @@ serverSystem.updatePositionPlayerFromFrame = function(currentClient){
     this.applyComponentChanges(currentClient.player,currentClient.currentKeyframe.positionComponent);
     this.applyComponentChanges(currentClient.player,currentClient.currentKeyframe.rotationComponent);
   }
+}
+
+serverSystem.initClientTimelineData = function(currentClient){
+  currentClient.markers = new Array(); //Permet de stocker les markers
+  currentClient.timeline = new Array(); //Permet de stocker la timeline
+  currentClient.lastframe = -1; //Permet de connaitre l'ID de la dernière frame sauvegardée. Vaut -1 si aucune sauvegardée
+  currentClient.counter = 0; //Compteur incrémental assignant un ID aux nouvelles frames
+  currentClient.currentPosition = 0; //Indique le numéro de frame courante, incrémental peu importe les id (utile pour la timeline)
+  currentClient.frameNumber = 0; //Nombre total de frame(utile pour la timeline)
+  currentClient.currentKeyframe = null; //Indique la keyframe courante
+  currentClient.isPlayingSequence = false; //Notify if the client is playing the sequence
+  currentClient.isPlayingSequenceFullScreen = false; //Notify if the client is playing the sequence full screen
+  currentClient.timelineExtended = new Array(); //Permet de stocker la timeline "complète" avec toute les transitions
 }
 
 

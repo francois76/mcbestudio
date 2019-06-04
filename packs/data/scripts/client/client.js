@@ -65,6 +65,7 @@ clientSystem.initialize = function () {
   this.registerEventData("mcbestudio:enter_place_keyframe_mode", {});
   this.registerEventData("mcbestudio:client_entered_world", {});
   this.registerEventData("mcbestudio:generate_sequence", {});
+  this.registerEventData("mcbestudio:delete_sequence", {});
   this.registerEventData("mcbestudio:go_to_first_frame", {});
   this.registerEventData("mcbestudio:go_to_last_frame", {});
   this.registerEventData("mcbestudio:go_to_next_frame", {});
@@ -128,6 +129,8 @@ clientSystem.onUIMessage = function (eventDataObject) {
     this.goToPlayFull();
   }else if(eventData === "progressBarOpened"){
     this.progressBarOpened();
+  }else if(eventData === "deleteSequence"){
+    this.onDeleteSequence();
   }else{
     console.log(eventData);
   }
@@ -176,6 +179,13 @@ clientSystem.onSequenceGeneration = function(){
   eventData.data = new Object(); 
   eventData.data.id = clientId;
   this.broadcastEvent("mcbestudio:generate_sequence",eventData);
+}
+
+clientSystem.onDeleteSequence = function(){
+  let eventData = this.createEventData("mcbestudio:delete_sequence");
+  eventData.data = new Object(); 
+  eventData.data.id = clientId;
+  this.broadcastEvent("mcbestudio:delete_sequence",eventData);
 }
 
 clientSystem.goToFirstFrame = function(){

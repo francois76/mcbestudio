@@ -19,6 +19,7 @@ rawTimeLineLength = 40;
 let exitButton = document.getElementById("exitButton");
 let placeKeyframeButton = document.getElementById("placeKeyframeButton");
 let generateSequenceButton = document.getElementById("generateSequenceButton");
+let deleteSequenceButton = document.getElementById("deleteSequenceButton");
 let playPauseButton = document.getElementById("playPauseButton");
 let playFullButton = document.getElementById("playFullButton");
 let firstFrameButton = document.getElementById("firstFrameButton");
@@ -42,6 +43,12 @@ placeKeyframeButton.addEventListener("click", function () {
 
 generateSequenceButton.addEventListener("click", function () {
 	buttonCallback("generateSequence");
+});
+
+deleteSequenceButton.addEventListener("click", function () {
+    updateKeyFrameNumber(0);
+    document.getElementById("timeline").textContent = generateUpdatedTimeline();
+	buttonCallback("deleteSequence");
 });
     
 playPauseButton.addEventListener("click", function () {

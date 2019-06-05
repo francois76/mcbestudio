@@ -9,8 +9,8 @@
       },
       "components": {
         "minecraft:collision_box": {
-          "width": 1,
-          "height": 2
+          "width": 0.01,
+          "height": 0.01
         },
         "minecraft:health": {
           "value": 40,

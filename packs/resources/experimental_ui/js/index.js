@@ -10,6 +10,7 @@ engine.on("facet:updated:core.scripting", function (interface) {
 engine.trigger("facet:request", ["core.scripting"]);
 
 isPlayButton = true;
+suppressWarningTriggered = false;
 keyFrameNumber = 0;
 currentKeyFrame = 1;
 timeLineIndex = 1;
@@ -46,9 +47,24 @@ generateSequenceButton.addEventListener("click", function () {
 });
 
 deleteSequenceButton.addEventListener("click", function () {
-    updateKeyFrameNumber(0);
-    document.getElementById("timeline").textContent = generateUpdatedTimeline();
-	buttonCallback("deleteSequence");
+    if(suppressWarningTriggered){
+        updateKeyFrameNumber(0);
+        document.getElementById("timeline").textContent = generateUpdatedTimeline();
+        buttonCallback("deleteSequence");
+        deleteSequenceButton.style.backgroundColor = "blue";
+        deleteSequenceButton.textContent = "Sequence deleted"
+        suppressWarningTriggered = false;
+    }else{
+        deleteSequenceButton.style.backgroundColor = "red";
+        deleteSequenceButton.textContent = "Click again to confirm"
+        suppressWarningTriggered = true;
+    }
+    
+});
+
+deleteSequenceButton.addEventListener("mouseout", function () {
+    deleteSequenceButton.style.backgroundColor = "#31B23D";
+    deleteSequenceButton.textContent = "Delete sequence"
 });
     
 playPauseButton.addEventListener("click", function () {

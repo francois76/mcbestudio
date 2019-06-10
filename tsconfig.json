@@ -1,13 +1,12 @@
+// This file keeps IDEs happy, it is not used for compilation
 {
     "compilerOptions": {
         "module": "ES6",
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "rootDir": "./packs",
+        "target": "es6"
     },
     "include": [
-        "packs/**/scripts/client/*",
-        "packs/**/scripts/server/*",
-    ],
-    "exclude": [
-        "node_modules"
+        "**/scripts/*/*.ts",
     ]
 }

@@ -55,6 +55,18 @@ namespace Client {
     }
   }
 
+  const wallOffameOptions = {
+    path: 'wallOfFame.html', options: {
+      always_accepts_input: false,
+      render_game_behind: true,
+      absorbs_input: true,
+      is_showing_menu: false,
+      should_steal_mouse: false,
+      force_render_below: false,
+      render_only_when_topmost: false
+    }
+  }
+
   // init listeners
   clientSystem.initialize = function () {
     console.initLogger();
@@ -131,6 +143,10 @@ namespace Client {
       progressBarOpened();
     } else if (eventData === "deleteSequence") {
       onDeleteSequence();
+    } else if (eventData === "wallOfFameButton") {
+      goToWallOfFame();
+    } else if (eventData === "backButtonWallOfFame") {
+      goToBackButtonWallOfFame();
     } else {
       console.log(eventData);
     }
@@ -255,6 +271,17 @@ namespace Client {
     clientSystem.broadcastEvent("mcbestudio:go_to_play", eventData);
   }
 
+  function goToWallOfFame() {
+    var loadUiEvent = handleEventData('minecraft:load_ui', wallOffameOptions);
+    clientSystem.broadcastEvent('minecraft:load_ui', loadUiEvent);
+  }
+
+  function goToBackButtonWallOfFame() {
+    let unloadEventData = clientSystem.createEventData("minecraft:unload_ui");
+    unloadEventData.data.path = "wallOfFame.html";
+    clientSystem.broadcastEvent("minecraft:unload_ui", unloadEventData);
+  }
+
   function openModal(eventData: IEventData<any>) {
     if (eventData.data.targetClient == clientId) {
       var loadUiEvent = handleEventData('minecraft:load_ui', progressBarOptions);
@@ -308,7 +335,7 @@ namespace Client {
 
   function progressBarOpened() {
     let progressBarOpenedEventData: IEventData<any> = clientSystem.createEventData("mcbestudio:progressBarOpened");
-    progressBarOpenedEventData.data.clientId = clientId;
+    progressBarOpenedEventData.data.id = clientId;
     clientSystem.broadcastEvent("mcbestudio:progressBarOpened", progressBarOpenedEventData)
   }
 

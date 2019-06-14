@@ -99,12 +99,7 @@ namespace Server {
   }
 
   function generateSequence(eventData: IEventData<any>) {
-    let currentClient: CurrentClient = connectedClientsdata[eventData.data.id];
-    if (currentClient.timeline.length > 0) {
-      let openModalEventData: IEventData<any> = serverSystem.createEventData("mcbestudio:openModal");
-      openModalEventData.data.targetClient = eventData.data.id;
-      serverSystem.broadcastEvent("mcbestudio:openModal", openModalEventData);
-    }
+    getCurrentClientFromEventData(eventData, connectedClientsdata).generateSequence();
   }
 
   function deleteSequence(eventData: IEventData<any>) {
@@ -112,77 +107,7 @@ namespace Server {
   }
 
   function progressBarOpened(eventData: IEventData<any>) {
-    let currentClient: CurrentClient = connectedClientsdata[eventData.data.clientId];
-    let updateModalEventData: IEventData<any> = serverSystem.createEventData("mcbestudio:updateModalValue");
-    updateModalEventData.data.targetClient = eventData.data.clientId;
-    let px: Array<number> = new Array();
-    let py: Array<number> = new Array();
-    let pz: Array<number> = new Array();
-    let rx: Array<number> = new Array();
-    let ry: Array<number> = new Array();
-    updateModalEventData.data.currentState = 10;
-    serverSystem.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
-    let currentKeyframe: TimelineElement = currentClient.timeline.find((keyframe: TimelineElement) => keyframe.previous == -1);
-    let next: number = currentKeyframe["current"];
-    while (currentKeyframe.next != -1) {
-      currentKeyframe = currentClient.timeline[next];
-      px.push(currentKeyframe.positionComponent.data.x);
-      py.push(currentKeyframe.positionComponent.data.y);
-      pz.push(currentKeyframe.positionComponent.data.z);
-      rx.push(currentKeyframe.rotationComponent.data.x);
-      ry.push(currentKeyframe.rotationComponent.data.y);
-      next = currentKeyframe.next;
-    }
-    updateModalEventData.data.currentState = 30;
-    serverSystem.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
-    let pxe: Array<number> = subdiviseIntervals(px, frameRate);
-    updateModalEventData.data.currentState = 40;
-    serverSystem.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
-    let pye: Array<number> = subdiviseIntervals(py, frameRate);
-    updateModalEventData.data.currentState = 50;
-    serverSystem.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
-    let pze: Array<number> = subdiviseIntervals(pz, frameRate);
-    updateModalEventData.data.currentState = 60;
-    serverSystem.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
-    let rxe: Array<number> = subdiviseIntervals(rx, frameRate);
-    updateModalEventData.data.currentState = 70;
-    serverSystem.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
-    let rye: Array<number> = subdiviseIntervalsRotY(ry, frameRate);
-    updateModalEventData.data.currentState = 80;
-    serverSystem.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
-    let i: number = 0;
-    while (pxe[i]) {
-
-      let positionComponent = serverSystem.getComponent(currentClient.player, MinecraftComponent.Position);
-      let rotationComponent = serverSystem.getComponent(currentClient.player, MinecraftComponent.Rotation);
-      positionComponent.data.x = pxe[i];
-      positionComponent.data.y = pye[i];
-      positionComponent.data.z = pze[i];
-      rotationComponent.data.x = rxe[i];
-      rotationComponent.data.y = rye[i];
-      currentClient.timelineExtended[i] = {
-        positionComponent,
-        rotationComponent
-      };
-      i++;
-    }
-    updateModalEventData.data.currentState = 90;
-    serverSystem.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
-    pxe = undefined;
-    pye = undefined;
-    pze = undefined;
-    rxe = undefined;
-    rye = undefined;
-    px = undefined;
-    py = undefined;
-    pz = undefined;
-    rx = undefined;
-    ry = undefined;
-    updateModalEventData.data.currentState = 100;
-    serverSystem.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
-    let closeModalEventData: IEventData<any> = serverSystem.createEventData("mcbestudio:closeModal");
-    closeModalEventData.data.targetClient = eventData.data.clientId;
-    serverSystem.broadcastEvent("mcbestudio:closeModal", closeModalEventData);
+    getCurrentClientFromEventData(eventData, connectedClientsdata).progressBarOpened();
   }
 
 }

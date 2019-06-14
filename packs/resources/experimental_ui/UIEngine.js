@@ -1,11 +1,11 @@
 let environment = "Minecraft"
 //Create fake mock to handle minecraft API calls
-if(environment!=="Minecraft"){
+if (environment !== "Minecraft") {
 	engine = new Object();
-	engine.BindingsReady = function(){};
-	engine.on = function(a,b){};
+	engine.BindingsReady = function () { };
+	engine.on = function (a, b) { };
 	engine.TriggerEvent = new Object();
-	engine.TriggerEvent.apply = function(a,b){};
+	engine.TriggerEvent.apply = function (a, b) { };
 }
 /// The `engine` module contains all functions for communication between the UI and the game / application.
 (function (factory) {
@@ -34,24 +34,20 @@ if(environment!=="Minecraft"){
 	}
 
 	Emitter.prototype._createClear = function (object, name, handler) {
-		return function() {
+		return function () {
 			var handlers = object.events[name];
 			if (handlers) {
 				var index = -1;
 				// this was in native previously
-				if(handler === undefined)
-				{
-					for(var i = 0; i < handlers.length; ++i)
-					{
-						if(handlers[i].wasInCPP !== undefined)
-						{
+				if (handler === undefined) {
+					for (var i = 0; i < handlers.length; ++i) {
+						if (handlers[i].wasInCPP !== undefined) {
 							index = i;
 							break;
 						}
 					}
 				}
-				else
-				{
+				else {
 					index = handlers.indexOf(handler);
 				}
 				if (index != -1) {
@@ -61,7 +57,7 @@ if(environment!=="Minecraft"){
 					}
 				}
 			} else {
-				if(engine.RemoveOnHandler !== undefined) {
+				if (engine.RemoveOnHandler !== undefined) {
 					engine.RemoveOnHandler(name);
 				}
 			}
@@ -117,8 +113,7 @@ if(environment!=="Minecraft"){
 				}
 			}
 		}
-		else
-		{
+		else {
 			engine.RemoveOnHandler(name);
 		}
 	};
@@ -131,7 +126,7 @@ if(environment!=="Minecraft"){
 	engine.isAttached = isAttached;
 
 	engine.onEventsReplayed = null;
-	Emitter.prototype.trigger = function(name) {
+	Emitter.prototype.trigger = function (name) {
 		var handlers = this.events[name];
 
 		if (handlers !== undefined) {
@@ -166,7 +161,7 @@ if(environment!=="Minecraft"){
 		setTimeout(async, 1);
 	}
 
-	function Promise () {
+	function Promise() {
 		this.emitter = new Emitter();
 		this.state = pending;
 		this.result = null;
@@ -341,10 +336,10 @@ if(environment!=="Minecraft"){
 		};
 
 		engine.beginEventRecording =
-		engine.endEventRecording =
-		engine.saveEventRecord = function() {
-			console.warning("Event recording will not work in the browser!");
-		};
+			engine.endEventRecording =
+			engine.saveEventRecord = function () {
+				console.warning("Event recording will not work in the browser!");
+			};
 
 		engine._mocks = {};
 		engine._mockImpl = function (name, mock, isCppCall, isEvent) {
@@ -357,9 +352,9 @@ if(environment!=="Minecraft"){
 			var args = functionStripped.substr(0, rightParanthesis);
 			if (this.browserCallbackMock) {
 				this.browserCallbackMock(name,
-										 args,
-										 isCppCall,
-										 Boolean(isEvent));
+					args,
+					isCppCall,
+					Boolean(isEvent));
 			}
 		}
 		engine.mock = function (name, mock, isEvent) {
@@ -381,7 +376,7 @@ if(environment!=="Minecraft"){
 				var prevEvent = engine.AddOrRemoveOnHandler(name, callback, context || engine);
 
 				// handler cached in C++
-				if(prevEvent === undefined) {
+				if (prevEvent === undefined) {
 					return { clear: this._createClear(this, name, undefined) };
 				}
 
@@ -450,13 +445,13 @@ if(environment!=="Minecraft"){
 	/// @function engine.showOverlay
 	/// Shows the debugging overlay in the browser.
 	/// Only works in the browser. Attempts to use it in Coherent UI will do nothing.
-	engine.showOverlay = function () {};
+	engine.showOverlay = function () { };
 
 
 	/// @function engine.hideOverlay
 	/// Hides the debugging overlay in the browser.
 	/// Only works in the browser. Attempts to use it in Coherent UI will do nothing.
-	engine.hideOverlay = function () {};
+	engine.hideOverlay = function () { };
 
 	/// @function engine.mock
 	/// Mocks a C++ function call with the specified function.
@@ -502,8 +497,7 @@ if(environment!=="Minecraft"){
 
 	engine._Result = function (requestId) {
 		var deferred = engine._ActiveRequests[requestId];
-		if (deferred !== undefined)
-		{
+		if (deferred !== undefined) {
 			delete engine._ActiveRequests[requestId];
 
 			var resultArguments = Array.prototype.slice.call(arguments);
@@ -512,7 +506,7 @@ if(environment!=="Minecraft"){
 		}
 	};
 
-	engine._Errors = [ 'Success', 'ArgumentType', 'NoSuchMethod', 'NoResult' ];
+	engine._Errors = ['Success', 'ArgumentType', 'NoSuchMethod', 'NoResult'];
 
 	engine._ForEachError = function (errors, callback) {
 		var length = errors.length;
@@ -578,7 +572,7 @@ if(environment!=="Minecraft"){
 	};
 
 	function createMethodStub(name) {
-		var stub = function() {
+		var stub = function () {
 			var args = Array.prototype.slice.call(arguments);
 			args.splice(0, 0, name, this._id);
 			return engine.call.apply(engine, args);
@@ -627,7 +621,7 @@ if(environment!=="Minecraft"){
 	engine._ThrowError = function (error) {
 		var prependTab = function (s) { return "\t" + s; };
 		var errorString = error.name + ": " + error.message + "\n" +
-						  error.stack.split("\n").map(prependTab).join("\n");
+			error.stack.split("\n").map(prependTab).join("\n");
 		console.error(errorString);
 	};
 
@@ -650,11 +644,11 @@ if(environment!=="Minecraft"){
 	engine.on('_OnReady', engine._OnReady, engine);
 	engine.on('_OnError', engine._OnError, engine);
 
-    engine.on('__OnReplayRecordCompleted', function(jsonRecords) {
-        if (engine.onEventsReplayed) {
-            engine.onEventsReplayed();
-        }
-    });
+	engine.on('__OnReplayRecordCompleted', function (jsonRecords) {
+		if (engine.onEventsReplayed) {
+			engine.onEventsReplayed();
+		}
+	});
 
 	engine.BindingsReady(VERSION[0], VERSION[1], VERSION[2], VERSION[3]);
 

@@ -1,6 +1,8 @@
 import { frameRate } from "../Const";
 import { CustomConsole } from "../Utils/CustomConsole";
 import { CurrentClient } from "./CurrentClient";
+import { PositionRotationObject, IMarker, TimelineElement } from "../interfaces";
+import { sendTimelineUpdate } from "../Utils/Common";
 export class ServerTimeline {
 
   console: CustomConsole = new CustomConsole(this._serverSystem);
@@ -9,13 +11,13 @@ export class ServerTimeline {
 
   goToFirstFrame(currentClient: CurrentClient) {
     currentClient.currentPosition = 0;
-    currentClient.currentKeyframe = currentClient.timeline.find((keyframe: any) => keyframe.previous == -1);
+    currentClient.currentKeyframe = currentClient.timeline.find((keyframe: TimelineElement) => keyframe.previous == -1);
     this.updatePositionPlayerFromFrame(currentClient);
   }
 
   goToLastFrame(currentClient: CurrentClient) {
-    currentClient.currentPosition = currentClient.timelineExtended.length;
-    currentClient.currentKeyframe = currentClient.timeline.find((keyframe: any) => keyframe.next == -1);
+    currentClient.currentPosition = (currentClient.timeline.length - 1) * frameRate;
+    currentClient.currentKeyframe = currentClient.timeline.find((keyframe: TimelineElement) => keyframe.next == -1);
     this.updatePositionPlayerFromFrame(currentClient);
   }
 
@@ -62,5 +64,6 @@ export class ServerTimeline {
       this._serverSystem.applyComponentChanges(currentClient.player, currentClient.currentKeyframe.positionComponent);
       this._serverSystem.applyComponentChanges(currentClient.player, currentClient.currentKeyframe.rotationComponent);
     }
+    sendTimelineUpdate(this._serverSystem, currentClient.player.id, currentClient.currentPosition);
   }
 }

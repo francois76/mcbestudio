@@ -28,3 +28,17 @@ export function getPositionAroundPlayer(_serverSystem: IVanillaServerSystem, tar
     entityPosition.data.z = posZ + radius * Math.cos((Math.PI * rotY) / 180) * Math.cos((Math.PI * rotX) / 180);
     return entityPosition;
 }
+
+export function updateModalValue(_serverSystem: IVanillaServerSystem, clientId: number, value: number) {
+    let updateModalEventData: IEventData<any> = _serverSystem.createEventData("mcbestudio:updateModalValue");
+    updateModalEventData.data.targetClient = clientId;
+    updateModalEventData.data.currentState = value;
+    _serverSystem.broadcastEvent("mcbestudio:updateModalValue", updateModalEventData);
+}
+
+export function sendTimelineUpdate(_serverSystem: IVanillaServerSystem, clientId: number, value: number) {
+    let notifyCurrentFrameEventData: IEventData<any> = _serverSystem.createEventData("mcbestudio:notifyCurrentFrame");
+    notifyCurrentFrameEventData.data.targetClient = clientId;
+    notifyCurrentFrameEventData.data.currentFrame = value;
+    _serverSystem.broadcastEvent("mcbestudio:notifyCurrentFrame", notifyCurrentFrameEventData);
+}

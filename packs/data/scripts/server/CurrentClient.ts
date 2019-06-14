@@ -1,8 +1,8 @@
 
 import { CustomConsole } from "../Utils/CustomConsole";
 import { PositionRotationObject, IMarker, TimelineElement } from "../interfaces";
-import { generateMarker } from "../Utils/Common";
-import { ServerTimeline } from "./serverTimeline";
+import { generateMarker, updateModalValue, sendTimelineUpdate } from "../Utils/Common";
+import { subdiviseIntervals, subdiviseIntervalsRotY } from "../Utils/MathUtils";
 import { frameRate } from "../Const";
 export class CurrentClient {
     private console: CustomConsole = new CustomConsole(this._serverSystem);
@@ -155,10 +155,7 @@ export class CurrentClient {
             this._serverSystem.applyComponentChanges(this.player, this.timelineExtended[this.currentPosition].positionComponent);
             this._serverSystem.applyComponentChanges(this.player, this.timelineExtended[this.currentPosition].rotationComponent);
             this.currentPosition++;
-            let notifyCurrentFrameEventData: IEventData<any> = this._serverSystem.createEventData("mcbestudio:notifyCurrentFrame");
-            notifyCurrentFrameEventData.data.targetClient = this.player.id;
-            notifyCurrentFrameEventData.data.currentFrame = this.currentPosition;
-            this._serverSystem.broadcastEvent("mcbestudio:notifyCurrentFrame", notifyCurrentFrameEventData);
+            sendTimelineUpdate(this._serverSystem, this.player.id, this.currentPosition);
         } else {
             this.isPlayingSequence = false;
             if (this.isPlayingSequenceFullScreen) {
@@ -185,6 +182,67 @@ export class CurrentClient {
         this.isPlayingSequence = false; //Notify if the client is playing the sequence
         this.isPlayingSequenceFullScreen = false; //Notify if the client is playing the sequence full screen
         this.timelineExtended = new Array(); //Permet de stocker la timeline "complète" avec toute les transitions
+    }
+
+    generateSequence() {
+        if (this.timeline.length > 0) {
+            let openModalEventData: IEventData<any> = this._serverSystem.createEventData("mcbestudio:openModal");
+            openModalEventData.data.targetClient = this.player.id;
+            this._serverSystem.broadcastEvent("mcbestudio:openModal", openModalEventData);
+        }
+    }
+
+    progressBarOpened() {
+        let px: Array<number> = new Array();
+        let py: Array<number> = new Array();
+        let pz: Array<number> = new Array();
+        let rx: Array<number> = new Array();
+        let ry: Array<number> = new Array();
+        let currentKeyframe: TimelineElement = this.timeline.find((keyframe: TimelineElement) => keyframe.previous == -1);
+        let next: number = currentKeyframe["current"];
+        while (currentKeyframe.next != -1) {
+            currentKeyframe = this.timeline[next];
+            px.push(currentKeyframe.positionComponent.data.x);
+            py.push(currentKeyframe.positionComponent.data.y);
+            pz.push(currentKeyframe.positionComponent.data.z);
+            rx.push(currentKeyframe.rotationComponent.data.x);
+            ry.push(currentKeyframe.rotationComponent.data.y);
+            next = currentKeyframe.next;
+        }
+        let pxe: Array<number> = subdiviseIntervals(px, frameRate);
+        let pye: Array<number> = subdiviseIntervals(py, frameRate);
+        let pze: Array<number> = subdiviseIntervals(pz, frameRate);
+        let rxe: Array<number> = subdiviseIntervals(rx, frameRate);
+        let rye: Array<number> = subdiviseIntervalsRotY(ry, frameRate);
+        let i: number = 0;
+        for (let i: number = 0; i < pxe.length; i++) {
+
+            let positionComponent = this._serverSystem.getComponent(this.player, MinecraftComponent.Position);
+            let rotationComponent = this._serverSystem.getComponent(this.player, MinecraftComponent.Rotation);
+            positionComponent.data.x = pxe[i];
+            positionComponent.data.y = pye[i];
+            positionComponent.data.z = pze[i];
+            rotationComponent.data.x = rxe[i];
+            rotationComponent.data.y = rye[i];
+            this.timelineExtended[i] = {
+                positionComponent,
+                rotationComponent
+            };
+            updateModalValue(this._serverSystem, this.player.id, Math.floor((i / pxe.length) * 10) * 10);
+        }
+        pxe = undefined;
+        pye = undefined;
+        pze = undefined;
+        rxe = undefined;
+        rye = undefined;
+        px = undefined;
+        py = undefined;
+        pz = undefined;
+        rx = undefined;
+        ry = undefined;
+        let closeModalEventData: IEventData<any> = this._serverSystem.createEventData("mcbestudio:closeModal");
+        closeModalEventData.data.targetClient = this.player.id;
+        this._serverSystem.broadcastEvent("mcbestudio:closeModal", closeModalEventData);
     }
 
 

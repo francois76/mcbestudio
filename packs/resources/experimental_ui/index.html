@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<script src="UIEngine.js"></script>
 	<link rel="stylesheet" href="css/main.css" />
 </head>
+
 <body>
 	<div class="gameWindow">
-    	<div class="titlebar">
+		<div class="titlebar">
 			<div class="titlebar-spacer"></div>
 			<button id="deleteSequenceButton" class="real-button title-button-alignright">Delete sequence</button>
 			<button id="generateSequenceButton" class="real-button title-button-alignright">Generate sequence</button>
 			<button id="placeKeyframeButton" class="real-button title-button-alignright">Place Keyframe</button>
-            <button id="exitButton" class="real-button title-button-alignright">Quit MCBE Studio</button>
+			<button id="exitButton" class="real-button title-button-alignright">Quit MCBE Studio</button>
 		</div>
 		<div class="player">
 			<div id="timeline" class="timeline">
@@ -27,7 +29,13 @@
 				<button id="lastFrameButton" class="real-button lastFrame timeline-button"></button>
 			</div>
 		</div>
-	</div>   
+		<div class="footer">
+			<button id="wallOfFameButton" class="real-button wallOfFame footer-button"></button>
+			<div class="footer-spacer"></div>
+			<span class="version">v 1.12.3</span>
+		</div>
+	</div>
 </body>
 <script src="js/index.js"></script>
+
 </html>

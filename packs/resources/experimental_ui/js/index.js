@@ -27,131 +27,128 @@ let firstFrameButton = document.getElementById("firstFrameButton");
 let previousFrameButton = document.getElementById("previousFrameButton");
 let nextFrameButton = document.getElementById("nextFrameButton");
 let lastFrameButton = document.getElementById("lastFrameButton");
+let wallOfFameButton = document.getElementById("wallOfFameButton");
 
 // Callback to send the button event to the client script
 let buttonCallback = function (event) {
-	scriptInterface.triggerEvent(event);
+    scriptInterface.triggerEvent(event);
 }
 
 // Handle button presses on the ability buttons. Send a specific event for each ability button to the client script.
 exitButton.addEventListener("click", function () {
-	buttonCallback("modExit");
+    buttonCallback("modExit");
 });
 
 placeKeyframeButton.addEventListener("click", function () {
-	buttonCallback("enterPlaceKeyframeMode");
+    buttonCallback("enterPlaceKeyframeMode");
 });
 
 generateSequenceButton.addEventListener("click", function () {
-	buttonCallback("generateSequence");
+    buttonCallback("generateSequence");
 });
 
 deleteSequenceButton.addEventListener("click", function () {
-    if(suppressWarningTriggered){
+    if (suppressWarningTriggered) {
         updateKeyFrameNumber(0);
         document.getElementById("timeline").textContent = generateUpdatedTimeline();
         buttonCallback("deleteSequence");
         deleteSequenceButton.style.backgroundColor = "blue";
         deleteSequenceButton.textContent = "Sequence deleted"
         suppressWarningTriggered = false;
-    }else{
+    } else {
         deleteSequenceButton.style.backgroundColor = "red";
         deleteSequenceButton.textContent = "Click again to confirm"
         suppressWarningTriggered = true;
     }
-    
+
 });
 
 deleteSequenceButton.addEventListener("mouseout", function () {
     deleteSequenceButton.style.backgroundColor = "#31B23D";
     deleteSequenceButton.textContent = "Delete sequence"
 });
-    
+
 playPauseButton.addEventListener("click", function () {
     updateButtonImage();
-    if(isPlayButton){
+    if (isPlayButton) {
         buttonCallback("pause");
-    }else{
+    } else {
         buttonCallback("play");
     }
 });
 
 playFullButton.addEventListener("click", function () {
-	buttonCallback("playFull");
+    buttonCallback("playFull");
 });
-    
+
 firstFrameButton.addEventListener("click", function () {
-    currentKeyFrame = 1;
-    document.getElementById("timeline").textContent = generateUpdatedTimeline();
-	buttonCallback("firstFrame");
+    buttonCallback("firstFrame");
 });
-    
+
 previousFrameButton.addEventListener("click", function () {
-    if(currentKeyFrame>1){
-        currentKeyFrame--;
-        document.getElementById("timeline").textContent = generateUpdatedTimeline();
+    if (currentKeyFrame > 1) {
         buttonCallback("previousFrame");
     }
 });
-    
+
 nextFrameButton.addEventListener("click", function () {
-    if(currentKeyFrame<keyFrameNumber){
-        currentKeyFrame++;
-        document.getElementById("timeline").textContent = generateUpdatedTimeline();
+    if (currentKeyFrame < keyFrameNumber) {
         buttonCallback("nextFrame");
     }
 });
-    
+
 lastFrameButton.addEventListener("click", function () {
-    currentKeyFrame = keyFrameNumber;
-    document.getElementById("timeline").textContent = generateUpdatedTimeline();
-	buttonCallback("lastFrame");
+    buttonCallback("lastFrame");
 });
 
-updateButtonImage = function(){
-    if(isPlayButton){
+wallOfFameButton.addEventListener("click", function () {
+    buttonCallback("wallOfFameButton");
+});
+
+updateButtonImage = function () {
+    if (isPlayButton) {
         playPauseButton.style.backgroundImage = 'url("assets/images/pause.png")';
         isPlayButton = false;
-    }else{
+    } else {
         playPauseButton.style.backgroundImage = 'url("assets/images/play.png")';
         isPlayButton = true;
     }
 }
 
-generateUpdatedTimeline = function(){
+generateUpdatedTimeline = function () {
     generatedTimeLine = "";
-    if(keyFrameNumber === 0){
+    if (keyFrameNumber === 0) {
         timelineIndex = -1;
-    }else{
-        timelineIndex = Math.floor((currentKeyFrame-1) * ((rawTimeLineLength/(keyFrameNumber-1))));
+    } else {
+        timelineIndex = Math.floor((currentKeyFrame - 1) * ((rawTimeLineLength / (keyFrameNumber - 1))));
     }
-    for(i = 0;i<=rawTimeLineLength;i++){
-        if(i === timelineIndex){
+    for (i = 0; i <= rawTimeLineLength; i++) {
+        if (i === timelineIndex) {
             generatedTimeLine = generatedTimeLine + "O";
-        }else{
+        } else {
             generatedTimeLine = generatedTimeLine + "-";
         }
     }
     return "[" + generatedTimeLine + "]";
 }
 
-updateKeyFrameNumber = function(keyFrameNumberServer){
+updateKeyFrameNumber = function (keyFrameNumberServer) {
     keyFrameNumber = keyFrameNumberServer;
 }
 
-engine.on("mcbestudio:updateFrameNumberUi", function(frameNumberEventdata){
+engine.on("mcbestudio:updateFrameNumberUi", function (frameNumberEventdata) {
     updateKeyFrameNumber(frameNumberEventdata);
     document.getElementById("timeline").textContent = generateUpdatedTimeline();
 });
 
-engine.on("mcbestudio:switchPlayToPause", function(eventdata){
+engine.on("mcbestudio:switchPlayToPause", function (eventdata) {
     updateButtonImage();
 });
 
-engine.on("mcbestudio:notifyCurrentFrame", function(currentFrame){
-    currentKeyFrame = (currentFrame/240) + 1;
+engine.on("mcbestudio:notifyCurrentFrame", function (currentFrame) {
+    currentKeyFrame = (currentFrame / 240) + 1;
     document.getElementById("timeline").textContent = generateUpdatedTimeline();
 });
 
-engine.on("mcbestudio:updateModal", function(newSize){
+engine.on("mcbestudio:updateModal", function (newSize) {
 });

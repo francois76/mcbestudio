@@ -1,0 +1,26 @@
+{
+    "format_version": "1.8.0",
+    "minecraft:entity": {
+        "description": {
+            "identifier": "mcbestudio:player_follower",
+            "is_spawnable": false,
+            "is_summonable": true,
+            "is_experimental": false
+        },
+        "components": {
+            "minecraft:collision_box": {
+                "width": 1.5,
+                "height": 2
+            },
+            "minecraft:health": {
+                "value": 40,
+                "max": 40
+            },
+            "minecraft:physics": {
+                "has_collision": false,
+                "has_gravity": false
+            }
+        },
+        "events": {}
+    }
+}

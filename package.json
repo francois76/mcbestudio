@@ -14,6 +14,5 @@
         "minecraft-addon-toolchain-typescript": "^1.0.3",
         "minecraft-scripting-types-client": "^1.0.0",
         "minecraft-scripting-types-server": "^1.0.0"
-    },
-    "dependencies": {}
+    }
 }

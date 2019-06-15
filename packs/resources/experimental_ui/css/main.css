@@ -92,7 +92,7 @@ body {
 	justify-content: flex-end;
 	align-items: center;
 	position: absolute;
-	bottom: 4vh;
+	bottom: 6vh;
 	height: 4vh;
 }
 
@@ -229,6 +229,24 @@ body {
 .version{
 	font-size: 3vh;
 	color: white;
+}
+
+.delete-button-confirm{
+	font-size: 2vh;
+	font-family: "MinecraftFive";
+	background-color:red;
+	color: white;
+	border-color: #24241B;
+	border-width: 0.2vh;
+}
+
+.delete-button-deleted{
+	font-size: 2vh;
+	font-family: "MinecraftFive";
+	background-color:blue;
+	color: white;
+	border-color: #24241B;
+	border-width: 0.2vh;
 }
 
 

@@ -2,7 +2,7 @@ import { frameRate } from "../Const";
 import { CustomConsole } from "../Utils/CustomConsole";
 import { CurrentClient } from "./CurrentClient";
 import { PositionRotationObject, IMarker, TimelineElement } from "../interfaces";
-import { sendTimelineUpdate } from "../Utils/Common";
+import { sendTimelineUpdate, summonPlayerFollower } from "../Utils/Common";
 export class ServerTimeline {
 
   console: CustomConsole = new CustomConsole(this._serverSystem);
@@ -49,6 +49,7 @@ export class ServerTimeline {
     }
     if (isFullScreen) {
       currentClient.isPlayingSequenceFullScreen = true;
+      summonPlayerFollower(this._serverSystem, currentClient);
     } else {
       currentClient.isPlayingSequenceFullScreen = false;
     }

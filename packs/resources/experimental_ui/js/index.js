@@ -2,6 +2,8 @@
 // Get a handle to the scripting interface on creation.
 // The script interface can trigger events to the client script
 let scriptInterface = null;
+scriptInterface = new Object();
+scriptInterface.triggerEvent = function (a) { };
 engine.on("facet:updated:core.scripting", function (interface) {
     scriptInterface = interface;
     scriptInterface.triggerEvent("indexUiOpened");
@@ -52,20 +54,25 @@ deleteSequenceButton.addEventListener("click", function () {
         updateKeyFrameNumber(0);
         document.getElementById("timeline").textContent = generateUpdatedTimeline();
         buttonCallback("deleteSequence");
-        deleteSequenceButton.style.backgroundColor = "blue";
+        deleteSequenceButton.classList.remove('real-button');
+        deleteSequenceButton.classList.add('delete-button-deleted');
         deleteSequenceButton.textContent = "Sequence deleted"
         suppressWarningTriggered = false;
     } else {
-        deleteSequenceButton.style.backgroundColor = "red";
+        deleteSequenceButton.classList.remove('real-button');
+        deleteSequenceButton.classList.add('delete-button-confirm');
         deleteSequenceButton.textContent = "Click again to confirm"
         suppressWarningTriggered = true;
     }
 
 });
 
-deleteSequenceButton.addEventListener("mouseout", function () {
-    deleteSequenceButton.style.backgroundColor = "#31B23D";
-    deleteSequenceButton.textContent = "Delete sequence"
+deleteSequenceButton.addEventListener("mouseleave", function () {
+    deleteSequenceButton.classList.remove('delete-button-confirm');
+    deleteSequenceButton.classList.remove('delete-button-deleted');
+    deleteSequenceButton.classList.add('real-button');
+    deleteSequenceButton.textContent = "Delete sequence";
+    suppressWarningTriggered = false;
 });
 
 playPauseButton.addEventListener("click", function () {
@@ -78,6 +85,7 @@ playPauseButton.addEventListener("click", function () {
 });
 
 playFullButton.addEventListener("click", function () {
+    setPlayToPause();
     buttonCallback("playFull");
 });
 
@@ -113,6 +121,10 @@ updateButtonImage = function () {
         playPauseButton.style.backgroundImage = 'url("assets/images/play.png")';
         isPlayButton = true;
     }
+}
+setPlayToPause = function () {
+    playPauseButton.style.backgroundImage = 'url("assets/images/pause.png")';
+    isPlayButton = false;
 }
 
 generateUpdatedTimeline = function () {

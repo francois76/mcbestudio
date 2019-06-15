@@ -1,3 +1,5 @@
+import { CurrentClient } from "../server/CurrentClient";
+
 export function generateMarker(_serverSystem: IVanillaServerSystem, player: IEntity, name: string, rotation: number, role: string) {
     let playerPositionComponent: IComponent<IPositionComponent> = _serverSystem.getComponent(player, MinecraftComponent.Position);
     let playerRotationComponent: IComponent<IRotationComponent> = _serverSystem.getComponent(player, MinecraftComponent.Rotation);
@@ -41,4 +43,19 @@ export function sendTimelineUpdate(_serverSystem: IVanillaServerSystem, clientId
     notifyCurrentFrameEventData.data.targetClient = clientId;
     notifyCurrentFrameEventData.data.currentFrame = value;
     _serverSystem.broadcastEvent("mcbestudio:notifyCurrentFrame", notifyCurrentFrameEventData);
+}
+
+export function summonPlayerFollower(_serverSystem: IVanillaServerSystem, client: CurrentClient) {
+    let playerPositionComponent: IComponent<IPositionComponent> = _serverSystem.getComponent(client.player, MinecraftComponent.Position);
+    let entityToGenerate = _serverSystem.createEntity("entity", "mcbestudio:player_follower");
+    _serverSystem.applyComponentChanges(entityToGenerate, playerPositionComponent);
+    let entityRole = _serverSystem.createComponent<any>(entityToGenerate, "mcbestudio:triggerer");
+    entityRole.data.role = "playerFollower";
+    _serverSystem.applyComponentChanges(entityToGenerate, entityRole);
+    client.playerFollower = entityToGenerate;
+}
+
+export function updatePlayerFollower(_serverSystem: IVanillaServerSystem, client: CurrentClient) {
+    let playerPositionComponent: IComponent<IPositionComponent> = _serverSystem.getComponent(client.player, MinecraftComponent.Position);
+    _serverSystem.applyComponentChanges(client.playerFollower, playerPositionComponent);
 }

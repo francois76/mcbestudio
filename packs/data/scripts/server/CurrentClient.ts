@@ -1,7 +1,7 @@
 
 import { CustomConsole } from "../Utils/CustomConsole";
 import { PositionRotationObject, IMarker, TimelineElement } from "../interfaces";
-import { generateMarker, updateModalValue, sendTimelineUpdate } from "../Utils/Common";
+import { generateMarker, updateModalValue, sendTimelineUpdate, updatePlayerFollower } from "../Utils/Common";
 import { subdiviseIntervals, subdiviseIntervalsRotY } from "../Utils/MathUtils";
 import { frameRate } from "../Const";
 export class CurrentClient {
@@ -23,7 +23,8 @@ export class CurrentClient {
         public posY: number,
         public posZ: number,
         public isPlayingSequenceFullScreen: boolean,
-        public isPlayingSequence: boolean
+        public isPlayingSequence: boolean,
+        public playerFollower: IEntity
     ) {
     }
 
@@ -47,9 +48,9 @@ export class CurrentClient {
     }
 
     onEntityHit(hitEntity: IEntity) {
-        if (this.isPlacingKeyframe) {
-            if (this._serverSystem.hasComponent(hitEntity, "mcbestudio:triggerer")) {
-                let triggererComponent = this._serverSystem.getComponent<any>(hitEntity, "mcbestudio:triggerer");
+        if (this._serverSystem.hasComponent(hitEntity, "mcbestudio:triggerer")) {
+            let triggererComponent = this._serverSystem.getComponent<any>(hitEntity, "mcbestudio:triggerer");
+            if (this.isPlacingKeyframe) {
                 if (triggererComponent.data.role == "exit") {
                     this.isPlacingKeyframe = false;
                     const placeEventData = this._serverSystem.createEventData("mcbestudio:exit_place_keyframe_mode");
@@ -66,6 +67,15 @@ export class CurrentClient {
                     let keyframeEntity: IMarker = generateMarker(this._serverSystem, this.player, "§b Placer Keyframe", 0, "manageKeyframe");
                     keyframeEntity.angle = 0;
                     this.markers[1] = keyframeEntity;
+                }
+            } else if (this.isPlayingSequenceFullScreen) {
+                if (triggererComponent.data.role == "playerFollower") {
+                    this.isPlayingSequenceFullScreen = false;
+                    this.playerFollower = null;
+                    let leaveFullScreenEventData: IEventData<any> = this._serverSystem.createEventData("mcbestudio:leaveFullScreen");
+                    leaveFullScreenEventData.data.targetClient = this.player.id;
+                    this._serverSystem.broadcastEvent("mcbestudio:leaveFullScreen", leaveFullScreenEventData);
+                    sendTimelineUpdate(this._serverSystem, this.player.id, this.currentPosition);
                 }
             }
         }
@@ -154,6 +164,9 @@ export class CurrentClient {
         if (this.timelineExtended[this.currentPosition]) {
             this._serverSystem.applyComponentChanges(this.player, this.timelineExtended[this.currentPosition].positionComponent);
             this._serverSystem.applyComponentChanges(this.player, this.timelineExtended[this.currentPosition].rotationComponent);
+            if (this.isPlayingSequenceFullScreen) {
+                updatePlayerFollower(this._serverSystem, this);
+            }
             this.currentPosition++;
             sendTimelineUpdate(this._serverSystem, this.player.id, this.currentPosition);
         } else {

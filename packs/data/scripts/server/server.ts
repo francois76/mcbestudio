@@ -86,6 +86,7 @@ namespace Server {
       playerPositionComponent.data.z,
       false, //Notify if the client is playing the sequence full screen
       false, //Notify if the client is playing the sequence
+      null
     );
   };
 

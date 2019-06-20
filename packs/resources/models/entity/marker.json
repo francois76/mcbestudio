@@ -1,0 +1,138 @@
+{
+	"format_version": "1.10.0",
+	"geometry.marker": {
+		"texturewidth": 16,
+		"textureheight": 16,
+		"visible_bounds_width": 1,
+		"visible_bounds_height": 1,
+		"visible_bounds_offset": [
+			0,
+			0.5,
+			0
+		],
+		"bones": [
+			{
+				"name": "group",
+				"pivot": [
+					0,
+					0,
+					0
+				],
+				"cubes": [
+					{
+						"origin": [
+							-6,
+							1,
+							-6
+						],
+						"size": [
+							12,
+							11,
+							12
+						],
+						"uv": [
+							0,
+							0
+						]
+					},
+					{
+						"origin": [
+							6,
+							2,
+							-5
+						],
+						"size": [
+							1,
+							9,
+							10
+						],
+						"uv": [
+							0,
+							0
+						]
+					},
+					{
+						"origin": [
+							-5,
+							2,
+							6
+						],
+						"size": [
+							10,
+							9,
+							1
+						],
+						"uv": [
+							0,
+							0
+						]
+					},
+					{
+						"origin": [
+							-5,
+							2,
+							-7
+						],
+						"size": [
+							10,
+							9,
+							1
+						],
+						"uv": [
+							0,
+							0
+						]
+					},
+					{
+						"origin": [
+							-7,
+							2,
+							-5
+						],
+						"size": [
+							1,
+							9,
+							10
+						],
+						"uv": [
+							0,
+							0
+						]
+					},
+					{
+						"origin": [
+							-5,
+							12,
+							-5
+						],
+						"size": [
+							10,
+							1,
+							10
+						],
+						"uv": [
+							0,
+							0
+						]
+					},
+					{
+						"origin": [
+							-5,
+							0,
+							-5
+						],
+						"size": [
+							10,
+							1,
+							10
+						],
+						"uv": [
+							0,
+							0
+						]
+					}
+				]
+			}
+		]
+	}
+}

@@ -30,8 +30,8 @@ export class CurrentClient {
 
     onClientEnteredKeyFrameMode() {
         this.isPlacingKeyframe = true;
-        let exitEntity: IMarker = generateMarker(this._serverSystem, this.player, "§cBack to menu", 45, "exit");
-        exitEntity.angle = 45;
+        let exitEntity: IMarker = generateMarker(this._serverSystem, this.player, "§cBack to menu", 50, "exit");
+        exitEntity.angle = 50;
         this.markers[0] = exitEntity;
 
         let keyframeEntity: IMarker = generateMarker(this._serverSystem, this.player, "§b Place Keyframe", 0, "manageKeyframe");
@@ -44,7 +44,6 @@ export class CurrentClient {
             this._serverSystem.applyComponentChanges(entityToGenerate, frame.rotationComponent);
             frame.entity = entityToGenerate;
         });
-        this._serverSystem.executeCommand("/effect @e[type=mcbestudio:timeline_element_entity] fire_resistance 99999 255", (commandData: any) => { });
     }
 
     onEntityHit(hitEntity: IEntity) {
@@ -107,7 +106,6 @@ export class CurrentClient {
         frameNumberEventdata.data.targetClient = this.player.id;
         this._serverSystem.broadcastEvent("mcbestudio:updateFrameNumber", frameNumberEventdata);
         this._serverSystem.applyComponentChanges(entityToGenerate, keyFrameData);
-        this._serverSystem.executeCommand("/effect @e[type=mcbestudio:timeline_element_entity] fire_resistance 99999 255", (commandData: any) => { });
         return entityToGenerate;
     }
 

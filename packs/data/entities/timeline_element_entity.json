@@ -1,27 +1,26 @@
 {
-    "format_version": "1.8.0",
-    "minecraft:entity": {
-      "description": {
-        "identifier": "mcbestudio:timeline_element_entity",
-        "is_spawnable": false,
-        "is_summonable": true,
-        "is_experimental": false
+  "format_version": "1.8.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "mcbestudio:timeline_element_entity",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:collision_box": {
+        "width": 0.001,
+        "height": 0.001
       },
-      "components": {
-        "minecraft:collision_box": {
-          "width": 0.01,
-          "height": 0.01
-        },
-        "minecraft:health": {
-          "value": 40,
-          "max": 40
-        },
-        "minecraft:physics": {
-          "has_collision": false,
-          "has_gravity": false
+      "minecraft:health": {
+        "value": 0.5,
+        "max": 0.5
+      },
+      "minecraft:physics": {
+        "has_collision": false,
+        "has_gravity": false
       }
     },
-      "events": {
-      }
+    "events": {}
   }
-  }
+}

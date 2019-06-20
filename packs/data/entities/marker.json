@@ -2,34 +2,35 @@
   "format_version": "1.8.0",
   "minecraft:entity": {
     "description": {
-      "identifier": "minecraft:armor_stand",
+      "identifier": "mcbestudio:marker",
       "is_spawnable": false,
       "is_summonable": true,
       "is_experimental": false
     },
     "components": {
       "minecraft:type_family": {
-        "family": [ "armor_stand", "inanimate" ]
+        "family": [
+          "armor_stand",
+          "inanimate"
+        ]
       },
       "minecraft:collision_box": {
-        "width": 0.5,
-        "height": 1.975
+        "width": 3,
+        "height": 3
       },
       "minecraft:health": {
-        "value": 6,
-        "max": 6
+        "value": 0.5,
+        "max": 0.5
       },
       "minecraft:loot": {
         "table": "loot_tables/entities/armor_stand.json"
       },
-      "minecraft:nameable": {
-      },
+      "minecraft:nameable": {},
       "minecraft:physics": {
         "has_collision": false,
         "has_gravity": false
-    }
-  },
-    "events": {
-    }
-}
+      }
+    },
+    "events": {}
+  }
 }

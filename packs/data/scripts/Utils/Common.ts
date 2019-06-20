@@ -3,7 +3,7 @@ import { CurrentClient } from "../server/CurrentClient";
 export function generateMarker(_serverSystem: IVanillaServerSystem, player: IEntity, name: string, rotation: number, role: string) {
     let playerPositionComponent: IComponent<IPositionComponent> = _serverSystem.getComponent(player, MinecraftComponent.Position);
     let playerRotationComponent: IComponent<IRotationComponent> = _serverSystem.getComponent(player, MinecraftComponent.Rotation);
-    let entityToGenerate = _serverSystem.createEntity("entity", "minecraft:armor_stand");
+    let entityToGenerate = _serverSystem.createEntity("entity", "mcbestudio:marker");
     let entityToGeneratePosition = getPositionAroundPlayer(_serverSystem, entityToGenerate, playerPositionComponent, playerRotationComponent, 4, rotation);
     _serverSystem.applyComponentChanges(entityToGenerate, entityToGeneratePosition);
     let entityToGenerateName = _serverSystem.createComponent(entityToGenerate, MinecraftComponent.Nameable);

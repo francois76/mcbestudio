@@ -59,6 +59,12 @@ namespace Server {
     });
   };
 
+  serverSystem.shutdown = function () {
+    serverSystem.executeCommand("/kill @e[type=mcbestudio:marker]", (commandData: any) => { });
+    serverSystem.executeCommand("/kill @e[type=mcbestudio:player_follower]", (commandData: any) => { });
+    serverSystem.executeCommand("/kill @e[type=mcbestudio:timeline_element_entity]", (commandData: any) => { });
+  }
+
   /**
   * Appelé lorsqu'un client se connecte au monde
   */

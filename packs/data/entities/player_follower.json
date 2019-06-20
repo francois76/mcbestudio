@@ -13,8 +13,8 @@
                 "height": 2
             },
             "minecraft:health": {
-                "value": 40,
-                "max": 40
+                "value": 0.5,
+                "max": 0.5
             },
             "minecraft:physics": {
                 "has_collision": false,

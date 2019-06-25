@@ -148,19 +148,20 @@ updateKeyFrameNumber = function (keyFrameNumberServer) {
     keyFrameNumber = keyFrameNumberServer;
 }
 
-engine.on("mcbestudio:updateFrameNumberUi", function (frameNumberEventdata) {
+engine.on("mcbestudio:update_frame_number_ui", function (frameNumberEventdata) {
+    buttonCallback("received :" + frameNumberEventdata);
     updateKeyFrameNumber(frameNumberEventdata);
     document.getElementById("timeline").textContent = generateUpdatedTimeline();
 });
 
-engine.on("mcbestudio:switchPlayToPause", function (eventdata) {
+engine.on("mcbestudio:switch_play_to_pause", function (eventdata) {
     updateButtonImage();
 });
 
-engine.on("mcbestudio:notifyCurrentFrame", function (currentFrame) {
+engine.on("mcbestudio:notify_current_frame", function (currentFrame) {
     currentKeyFrame = (currentFrame / 240) + 1;
     document.getElementById("timeline").textContent = generateUpdatedTimeline();
 });
 
-engine.on("mcbestudio:updateModal", function (newSize) {
+engine.on("mcbestudio:update_modal_value", function (newSize) {
 });

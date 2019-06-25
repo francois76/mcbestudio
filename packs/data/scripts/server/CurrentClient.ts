@@ -1,9 +1,10 @@
 
 import { CustomConsole } from "../Utils/CustomConsole";
-import { PositionRotationObject, IMarker, TimelineElement } from "../interfaces";
-import { generateMarker, updateModalValue, sendTimelineUpdate, updatePlayerFollower } from "../Utils/Common";
+import { PositionRotationObject, IMarker, TimelineElement } from "../Interfaces";
+import { generateMarker, updateModalValue, sendTimelineUpdate, updatePlayerFollower, broadcastEvent } from "../Utils/Common";
 import { subdiviseIntervals, subdiviseIntervalsRotY } from "../Utils/MathUtils";
 import { frameRate } from "../Const";
+import { CommonClientVariables } from "../client/CommonClientVariables";
 export class CurrentClient {
     private console: CustomConsole = new CustomConsole(this._serverSystem);
     constructor(private _serverSystem: IVanillaServerSystem,
@@ -52,9 +53,9 @@ export class CurrentClient {
             if (this.isPlacingKeyframe) {
                 if (triggererComponent.data.role == "exit") {
                     this.isPlacingKeyframe = false;
-                    const placeEventData = this._serverSystem.createEventData("mcbestudio:exit_place_keyframe_mode");
-                    placeEventData.data.targetClient = this.player.id;
-                    this._serverSystem.broadcastEvent("mcbestudio:exit_place_keyframe_mode", placeEventData);
+                    broadcastEvent("mcbestudio:exit_place_keyframe_mode", {
+                        targetClient: this.player.id,
+                    }, this._serverSystem);
                     this.markers.forEach((marker: IMarker) => {
                         this._serverSystem.destroyEntity(marker);
                     });
@@ -71,9 +72,9 @@ export class CurrentClient {
                 if (triggererComponent.data.role == "playerFollower") {
                     this.isPlayingSequenceFullScreen = false;
                     this.playerFollower = null;
-                    let leaveFullScreenEventData: IEventData<any> = this._serverSystem.createEventData("mcbestudio:leaveFullScreen");
-                    leaveFullScreenEventData.data.targetClient = this.player.id;
-                    this._serverSystem.broadcastEvent("mcbestudio:leaveFullScreen", leaveFullScreenEventData);
+                    broadcastEvent("mcbestudio:leave_full_screen", {
+                        targetClient: this.player.id,
+                    }, this._serverSystem);
                     sendTimelineUpdate(this._serverSystem, this.player.id, this.currentPosition);
                 }
             }
@@ -101,12 +102,11 @@ export class CurrentClient {
         this.timeline[this.lastframe].positionComponent = playerPositionComponent;
         this.timeline[this.lastframe].rotationComponent = playerRotationComponent;
         this.frameNumber++;
-        let frameNumberEventdata = this._serverSystem.createEventData("mcbestudio:updateFrameNumber");
-        frameNumberEventdata.data.frameNumber = this.frameNumber;
-        frameNumberEventdata.data.targetClient = this.player.id;
-        this._serverSystem.broadcastEvent("mcbestudio:updateFrameNumber", frameNumberEventdata);
+        broadcastEvent("mcbestudio:update_frame_number", {
+            targetClient: this.player.id,
+            frameNumber: this.frameNumber
+        }, this._serverSystem);
         this._serverSystem.applyComponentChanges(entityToGenerate, keyFrameData);
-        return entityToGenerate;
     }
 
     processMarkersUpdate() {
@@ -171,13 +171,9 @@ export class CurrentClient {
             this.isPlayingSequence = false;
             if (this.isPlayingSequenceFullScreen) {
                 this.isPlayingSequenceFullScreen = false;
-                let leaveFullScreenEventData: IEventData<any> = this._serverSystem.createEventData("mcbestudio:leaveFullScreen");
-                leaveFullScreenEventData.data.targetClient = this.player.id;
-                this._serverSystem.broadcastEvent("mcbestudio:leaveFullScreen", leaveFullScreenEventData);
+                broadcastEvent("mcbestudio:notify_sequence_ended", { targetClient: this.player.id }, this._serverSystem);
             } else {
-                let notifySequenceEndedEventData: IEventData<any> = this._serverSystem.createEventData("mcbestudio:notifySequenceEnded");
-                notifySequenceEndedEventData.data.targetClient = this.player.id;
-                this._serverSystem.broadcastEvent("mcbestudio:notifySequenceEnded", notifySequenceEndedEventData);
+                broadcastEvent("mcbestudio:notify_sequence_ended", { targetClient: this.player.id }, this._serverSystem);
             }
         }
     }
@@ -197,9 +193,7 @@ export class CurrentClient {
 
     generateSequence() {
         if (this.timeline.length > 0) {
-            let openModalEventData: IEventData<any> = this._serverSystem.createEventData("mcbestudio:openModal");
-            openModalEventData.data.targetClient = this.player.id;
-            this._serverSystem.broadcastEvent("mcbestudio:openModal", openModalEventData);
+            broadcastEvent("mcbestudio:open_modal", { targetClient: this.player.id }, this._serverSystem);
         }
     }
 
@@ -251,9 +245,7 @@ export class CurrentClient {
         pz = undefined;
         rx = undefined;
         ry = undefined;
-        let closeModalEventData: IEventData<any> = this._serverSystem.createEventData("mcbestudio:closeModal");
-        closeModalEventData.data.targetClient = this.player.id;
-        this._serverSystem.broadcastEvent("mcbestudio:closeModal", closeModalEventData);
+        broadcastEvent("mcbestudio:close_modal", { targetClient: this.player.id }, this._serverSystem);
     }
 
 

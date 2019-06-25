@@ -1,3 +1,4 @@
+import { EventAction } from "./Enums";
 
 export interface PositionRotationObject {
     positionComponent: IComponent<IPositionComponent>,
@@ -16,4 +17,10 @@ export interface TimelineElement {
 
 export interface IMarker extends IEntity {
     angle?: number;
+}
+
+export interface EventManagerElement {
+    name: string;
+    server_action: EventAction;
+    client_action: EventAction;
 }

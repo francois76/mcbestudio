@@ -1,7 +1,7 @@
 import { frameRate } from "../Const";
 import { CustomConsole } from "../Utils/CustomConsole";
 import { CurrentClient } from "./CurrentClient";
-import { PositionRotationObject, IMarker, TimelineElement } from "../interfaces";
+import { PositionRotationObject, IMarker, TimelineElement } from "../Interfaces";
 import { sendTimelineUpdate, summonPlayerFollower } from "../Utils/Common";
 export class ServerTimeline {
 

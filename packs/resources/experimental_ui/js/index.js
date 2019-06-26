@@ -76,17 +76,21 @@ deleteSequenceButton.addEventListener("mouseleave", function () {
 });
 
 playPauseButton.addEventListener("click", function () {
-    updateButtonImage();
-    if (isPlayButton) {
-        buttonCallback("pause");
-    } else {
-        buttonCallback("play");
+    if (keyFrameNumber != 0) {
+        updateButtonImage();
+        if (isPlayButton) {
+            buttonCallback("pause");
+        } else {
+            buttonCallback("play");
+        }
     }
 });
 
 playFullButton.addEventListener("click", function () {
-    setPlayToPause();
-    buttonCallback("playFull");
+    if (keyFrameNumber != 0) {
+        setPlayToPause();
+        buttonCallback("playFull");
+    }
 });
 
 firstFrameButton.addEventListener("click", function () {
@@ -149,7 +153,6 @@ updateKeyFrameNumber = function (keyFrameNumberServer) {
 }
 
 engine.on("mcbestudio:update_frame_number_ui", function (frameNumberEventdata) {
-    buttonCallback("received :" + frameNumberEventdata);
     updateKeyFrameNumber(frameNumberEventdata);
     document.getElementById("timeline").textContent = generateUpdatedTimeline();
 });

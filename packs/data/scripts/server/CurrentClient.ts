@@ -4,9 +4,7 @@ import { PositionRotationObject, IMarker, TimelineElement } from "../Interfaces"
 import { generateMarker, updateModalValue, sendTimelineUpdate, updatePlayerFollower, broadcastEvent } from "../Utils/Common";
 import { subdiviseIntervals, subdiviseIntervalsRotY } from "../Utils/MathUtils";
 import { frameRate } from "../Const";
-import { CommonClientVariables } from "../client/CommonClientVariables";
 export class CurrentClient {
-    private console: CustomConsole = new CustomConsole(this._serverSystem);
     constructor(private _serverSystem: IVanillaServerSystem,
         public isPlacingKeyframe: boolean,
         public markers: Array<IMarker>,

@@ -29,6 +29,10 @@ export class ServerTimeline {
     currentClient.currentPosition = newPosition;
     let newCurrentKeyframeid = currentClient.currentKeyframe.next;
     currentClient.currentKeyframe = currentClient.timeline[newCurrentKeyframeid];
+    if (currentClient.timelineExtended.length > 0) {
+      currentClient.currentKeyframe.positionComponent = currentClient.timelineExtended[newCurrentKeyframeid * frameRate].positionComponent;
+      currentClient.currentKeyframe.rotationComponent = currentClient.timelineExtended[newCurrentKeyframeid * frameRate].rotationComponent;
+    }
     this.updatePositionPlayerFromFrame(currentClient);
   }
 
@@ -40,6 +44,10 @@ export class ServerTimeline {
     currentClient.currentPosition = newPosition;
     let newCurrentKeyframeid = currentClient.currentKeyframe.previous;
     currentClient.currentKeyframe = currentClient.timeline[newCurrentKeyframeid];
+    if (currentClient.timelineExtended.length > 0) {
+      currentClient.currentKeyframe.positionComponent = currentClient.timelineExtended[newCurrentKeyframeid * frameRate].positionComponent;
+      currentClient.currentKeyframe.rotationComponent = currentClient.timelineExtended[newCurrentKeyframeid * frameRate].rotationComponent;
+    }
     this.updatePositionPlayerFromFrame(currentClient);
   }
 

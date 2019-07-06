@@ -96,6 +96,29 @@ body {
 	height: 4vh;
 }
 
+.tools{
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+	padding: 0;
+	margin: 0;
+	margin-left: 1vw;
+	position: absolute;
+	bottom: 17vh;
+	height: 4vh;
+}
+
+.tools-button{
+	width:2.5vw;
+	height: 4vh;
+	margin-left: 0.3vw;
+	margin-right: 0.3vw;
+	background-repeat: no-repeat;
+	background-position: center;	
+	background-size: 75%;
+}
+
 .timeline-button{
 	width:3vw;
 	height: 5vh;
@@ -108,7 +131,7 @@ body {
 
 .timeline{
 	font-size: 3vh;
-	background-color: #24241B;
+	background-color: rgba(36,36,27,0.7);
 	color: white;
 	margin-bottom: 1vh;
 }
@@ -142,6 +165,18 @@ body {
 
 .lastFrame{
 	background-image: url("../assets/images/last.png");
+}
+
+.moveKeyframe{
+	background-image: url("../assets/images/move_keyframe.png");
+}
+
+.deleteKeyframe{
+	background-image: url("../assets/images/delete_keyframe.png");
+}
+
+.cut{
+	background-image: url("../assets/images/cut.png");
 }
 
 .modal{

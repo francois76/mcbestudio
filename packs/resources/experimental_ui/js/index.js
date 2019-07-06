@@ -17,6 +17,7 @@ keyFrameNumber = 0;
 currentKeyFrame = 1;
 timeLineIndex = 1;
 rawTimeLineLength = 40;
+readMode = false;
 
 // Get each of the ability buttons
 let exitButton = document.getElementById("exitButton");
@@ -30,6 +31,9 @@ let previousFrameButton = document.getElementById("previousFrameButton");
 let nextFrameButton = document.getElementById("nextFrameButton");
 let lastFrameButton = document.getElementById("lastFrameButton");
 let wallOfFameButton = document.getElementById("wallOfFameButton");
+let moveKeyframeButton = document.getElementById("moveKeyframeButton");
+let deleteKeyframeButton = document.getElementById("deleteKeyframeButton");
+let cutButton = document.getElementById("cutButton");
 
 // Callback to send the button event to the client script
 let buttonCallback = function (event) {
@@ -57,6 +61,7 @@ deleteSequenceButton.addEventListener("click", function () {
         deleteSequenceButton.classList.remove('real-button');
         deleteSequenceButton.classList.add('delete-button-deleted');
         deleteSequenceButton.textContent = "Sequence deleted"
+        readMode = false;
         suppressWarningTriggered = false;
     } else {
         deleteSequenceButton.classList.remove('real-button');
@@ -76,7 +81,7 @@ deleteSequenceButton.addEventListener("mouseleave", function () {
 });
 
 playPauseButton.addEventListener("click", function () {
-    if (keyFrameNumber != 0) {
+    if (readMode) {
         updateButtonImage();
         if (isPlayButton) {
             buttonCallback("pause");
@@ -87,7 +92,7 @@ playPauseButton.addEventListener("click", function () {
 });
 
 playFullButton.addEventListener("click", function () {
-    if (keyFrameNumber != 0) {
+    if (readMode) {
         setPlayToPause();
         buttonCallback("playFull");
     }
@@ -115,6 +120,18 @@ lastFrameButton.addEventListener("click", function () {
 
 wallOfFameButton.addEventListener("click", function () {
     buttonCallback("wallOfFameButton");
+});
+
+moveKeyframeButton.addEventListener("click", function () {
+    buttonCallback("moveKeyframeButton");
+});
+
+deleteKeyframeButton.addEventListener("click", function () {
+    buttonCallback("deleteKeyframeButton");
+});
+
+cutButton.addEventListener("click", function () {
+    buttonCallback("cutButton");
 });
 
 updateButtonImage = function () {
@@ -167,4 +184,8 @@ engine.on("mcbestudio:notify_current_frame", function (currentFrame) {
 });
 
 engine.on("mcbestudio:update_modal_value", function (newSize) {
+    if (newSize == 100) {
+        readMode = true;
+        buttonCallback("readMode : " + readMode);
+    }
 });

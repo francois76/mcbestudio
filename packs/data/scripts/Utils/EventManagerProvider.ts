@@ -66,6 +66,22 @@ export class EventManagerProvider {
             client_action: EventAction.REGISTER,
             server_action: EventAction.LISTEN,
         },
+        //Client to server tools
+        {
+            name: "mcbestudio:move_keyframe",
+            client_action: EventAction.REGISTER,
+            server_action: EventAction.LISTEN,
+        },
+        {
+            name: "mcbestudio:delete_keyframe",
+            client_action: EventAction.REGISTER,
+            server_action: EventAction.LISTEN,
+        },
+        {
+            name: "mcbestudio:cut_sequence",
+            client_action: EventAction.REGISTER,
+            server_action: EventAction.LISTEN,
+        },
         //Server to client
         {
             name: "mcbestudio:exit_place_keyframe_mode",

@@ -75,6 +75,15 @@ export class ServerListeners {
         goToPause(playerId: number) {
             CommonServerVariables.serverTimeline.goToPause(CommonServerVariables.connectedClientsdata[playerId]);
         },
+        moveKeyframe(playerId: number) {
+            CommonServerVariables.console.log("Ability to move keyframe coming soon");
+        },
+        deleteKeyframe(playerId: number) {
+            CommonServerVariables.connectedClientsdata[playerId].deleteCurrentKeyframe();
+        },
+        cutSequence(playerId: number) {
+            CommonServerVariables.console.log("Ability to add cut in sequence coming soon");
+        },
 
     }
 }

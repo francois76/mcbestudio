@@ -79,4 +79,15 @@ export class UiListeners {
     progressBarOpened() {
         broadcastEvent("mcbestudio:progress_bar_opened", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
     }
+
+    goToMoveKeyframe() {
+        broadcastEvent("mcbestudio:move_keyframe", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
+    }
+
+    goToDeleteKeyframe() {
+        broadcastEvent("mcbestudio:delete_keyframe", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
+    }
+    goToCut() {
+        broadcastEvent("mcbestudio:cut_sequence", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
+    }
 }

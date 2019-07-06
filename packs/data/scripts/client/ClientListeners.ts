@@ -2,6 +2,7 @@ import { broadcastEvent } from "../Utils/Common";
 import { initUiOptions, indexUiOptions, progressBarOptions } from "../Const";
 import { CommonClientVariables } from "./CommonClientVariables";
 import { UiListeners } from "./UiListeners";
+import { CurrentClient } from "../server/CurrentClient";
 
 export class ClientListeners {
 
@@ -23,6 +24,8 @@ export class ClientListeners {
         },
         updateFrameNumber(frameNumber: number) {
             CommonClientVariables.frameNumber = frameNumber;
+            const uiListeners: UiListeners = new UiListeners();
+            uiListeners.indexUiOpened();
         },
         openModal() {
             broadcastEvent('minecraft:load_ui', progressBarOptions, this._clientSystem);
@@ -82,6 +85,12 @@ export class ClientListeners {
                 uiListeners.goToWallOfFame();
             } else if (data === "backButtonWallOfFame") {
                 uiListeners.goToBackButtonWallOfFame();
+            } else if (data === "moveKeyframeButton") {
+                uiListeners.goToMoveKeyframe();
+            } else if (data === "deleteKeyframeButton") {
+                uiListeners.goToDeleteKeyframe();
+            } else if (data === "cutButton") {
+                uiListeners.goToCut();
             } else {
                 CommonClientVariables.console.log(data);
             }

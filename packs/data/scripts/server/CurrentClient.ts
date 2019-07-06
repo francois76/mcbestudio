@@ -1,9 +1,10 @@
 
-import { CustomConsole } from "../Utils/CustomConsole";
+import { CommonServerVariables } from "./CommonServerVariables";
 import { PositionRotationObject, IMarker, TimelineElement } from "../Interfaces";
 import { generateMarker, updateModalValue, sendTimelineUpdate, updatePlayerFollower, broadcastEvent } from "../Utils/Common";
 import { subdiviseIntervals, subdiviseIntervalsRotY } from "../Utils/MathUtils";
 import { frameRate } from "../Const";
+import { ServerTimeline } from "./ServerTimeline";
 export class CurrentClient {
     constructor(private _serverSystem: IVanillaServerSystem,
         public isPlacingKeyframe: boolean,
@@ -92,13 +93,13 @@ export class CurrentClient {
         keyFrameData.data.next = -1;
         //On met à jour la liste chainée sur le précédent élément
         if (this.lastframe != -1) {
-            this.timeline[this.lastframe].next = currentFrame;
+            this.timeline.find((keyframe: TimelineElement) => keyframe.next == -1).next = currentFrame;
         }
         this.lastframe = currentFrame
-        this.timeline[this.lastframe] = keyFrameData.data;
-        this.timeline[this.lastframe].entity = entityToGenerate;
-        this.timeline[this.lastframe].positionComponent = playerPositionComponent;
-        this.timeline[this.lastframe].rotationComponent = playerRotationComponent;
+        let newLength: number = this.timeline.push(keyFrameData.data);
+        this.timeline[newLength - 1].entity = entityToGenerate;
+        this.timeline[newLength - 1].positionComponent = playerPositionComponent;
+        this.timeline[newLength - 1].rotationComponent = playerRotationComponent;
         this.frameNumber++;
         broadcastEvent("mcbestudio:update_frame_number", {
             targetClient: this.player.id,
@@ -118,21 +119,40 @@ export class CurrentClient {
             this.posZ = playerPositionComponent.data.z;
             this.rotX = playerRotationComponent.data.x - 10; //To put the marker a bit above
             this.rotY = playerRotationComponent.data.y;
+            let errorOccured: boolean = false;
             //On parcours tous les markers associés au joueur
             this.markers.forEach((marker: IMarker) => {
                 //On récupère leur position
-                let entityPosition = this._serverSystem.getComponent<IPositionComponent>(marker, MinecraftComponent.Position);
-                //On calcule la position relative par rapport au joueur
-                entityPosition.data.x = this.posX - 5 * Math.sin((Math.PI * (this.rotY - marker.angle)) / 180) * Math.cos((Math.PI * this.rotX) / 180);
-                entityPosition.data.y = this.posY - 5 * Math.sin((Math.PI * this.rotX) / 180);
-                entityPosition.data.z = this.posZ + 5 * Math.cos((Math.PI * (this.rotY - marker.angle)) / 180) * Math.cos((Math.PI * this.rotX) / 180);
-                //On set la position
-                this._serverSystem.applyComponentChanges(marker, entityPosition);
+                if (this._serverSystem.hasComponent(marker, MinecraftComponent.Position)) {
+                    let entityPosition = this._serverSystem.getComponent<IPositionComponent>(marker, MinecraftComponent.Position);
+                    //On calcule la position relative par rapport au joueur
+                    entityPosition.data.x = this.posX - 5 * Math.sin((Math.PI * (this.rotY - marker.angle)) / 180) * Math.cos((Math.PI * this.rotX) / 180);
+                    entityPosition.data.y = this.posY - 5 * Math.sin((Math.PI * this.rotX) / 180);
+                    entityPosition.data.z = this.posZ + 5 * Math.cos((Math.PI * (this.rotY - marker.angle)) / 180) * Math.cos((Math.PI * this.rotX) / 180);
+                    //On set la position
+                    this._serverSystem.applyComponentChanges(marker, entityPosition);
+                } else {
+                    errorOccured = true;
+                }
             }
             );
+            if (errorOccured) {
+                this.markers.forEach((marker: IMarker) => {
+                    if (this._serverSystem.hasComponent(marker, MinecraftComponent.Position)) {
+                        this._serverSystem.destroyEntity(marker);
+                    }
+                });
+                let exitEntity: IMarker = generateMarker(this._serverSystem, this.player, "§cBack to menu", 50, "exit");
+                exitEntity.angle = 50;
+                this.markers[0] = exitEntity;
+
+                let keyframeEntity: IMarker = generateMarker(this._serverSystem, this.player, "§b Place Keyframe", 0, "manageKeyframe");
+                keyframeEntity.angle = 0;
+                this.markers[1] = keyframeEntity;
+            }
             if (this.frameNumber >= 2) {
-                let lastFrameObject: TimelineElement = this.timeline[this.lastframe];
-                let preLastFrame: TimelineElement = this.timeline[lastFrameObject.previous];
+                let lastFrameObject: TimelineElement = this.timeline.find((keyframe: TimelineElement) => keyframe.next == -1);
+                let preLastFrame: TimelineElement = this.timeline.find((keyframe: TimelineElement) => keyframe.next == lastFrameObject.current);
                 let previousDistance: number = Math.sqrt(Math.pow(lastFrameObject.positionComponent.data.x - preLastFrame.positionComponent.data.x, 2) + Math.pow(lastFrameObject.positionComponent.data.y - preLastFrame.positionComponent.data.y, 2) + Math.pow(lastFrameObject.positionComponent.data.z - preLastFrame.positionComponent.data.z, 2));
                 let currentDistance: number = Math.sqrt(Math.pow(lastFrameObject.positionComponent.data.x - this.posX, 2) + Math.pow(lastFrameObject.positionComponent.data.y - this.posY, 2) + Math.pow(lastFrameObject.positionComponent.data.z - this.posZ, 2));
                 let entityToGenerateName = this._serverSystem.createComponent<INameableComponent>(this.markers[1], MinecraftComponent.Nameable);
@@ -204,7 +224,7 @@ export class CurrentClient {
         let currentKeyframe: TimelineElement = this.timeline.find((keyframe: TimelineElement) => keyframe.previous == -1);
         let next: number = currentKeyframe["current"];
         while (currentKeyframe.next != -1) {
-            currentKeyframe = this.timeline[next];
+            currentKeyframe = this.timeline.find((keyframe: TimelineElement) => keyframe.current == next);
             px.push(currentKeyframe.positionComponent.data.x);
             py.push(currentKeyframe.positionComponent.data.y);
             pz.push(currentKeyframe.positionComponent.data.z);
@@ -243,7 +263,52 @@ export class CurrentClient {
         pz = undefined;
         rx = undefined;
         ry = undefined;
+        updateModalValue(this._serverSystem, this.player.id, 100);
         broadcastEvent("mcbestudio:close_modal", { targetClient: this.player.id }, this._serverSystem);
+    }
+
+    deleteCurrentKeyframe() {
+        let newPosition: number = 0;
+        //Case at the middle of the timeline
+        if (this.timeline.length === 0 || this.currentKeyframe === undefined || (this.currentKeyframe.previous == -1 && this.currentKeyframe.next == -1)) {
+            this.resetTimelineData();
+        } else if (this.currentKeyframe.previous !== -1 && this.currentKeyframe.next !== -1) {
+            let previousKeyFrame: TimelineElement = this.timeline.find((timelineElement: TimelineElement) => timelineElement.current === this.currentKeyframe.previous);
+            let nextKeyFrame: TimelineElement = this.timeline.find((timelineElement: TimelineElement) => timelineElement.current === this.currentKeyframe.next);
+            previousKeyFrame.next = nextKeyFrame.current;
+            nextKeyFrame.previous = previousKeyFrame.current;
+            let newTimeline: Array<TimelineElement> = this.timeline.filter((timelineElement: TimelineElement) => timelineElement.current !== this.currentKeyframe.current);
+            this.timeline = newTimeline;
+            this.currentKeyframe = previousKeyFrame;
+            newPosition = (Math.trunc(this.currentPosition / frameRate) - 1) * frameRate;
+            this.frameNumber--;
+            //First frame deleted
+        } else if (this.currentKeyframe.previous === -1) {
+            let nextKeyFrame: TimelineElement = this.timeline.find((timelineElement: TimelineElement) => timelineElement.current === this.currentKeyframe.next);
+            nextKeyFrame.previous = -1;
+            let newTimeline: Array<TimelineElement> = this.timeline.filter((timelineElement: TimelineElement) => timelineElement.current !== this.currentKeyframe.current);
+            this.timeline = newTimeline;
+            this.currentKeyframe = nextKeyFrame;
+            newPosition = 0;
+            this.frameNumber--;
+        } else if (this.currentKeyframe.next === -1) {
+            let previousKeyFrame: TimelineElement = this.timeline.find((timelineElement: TimelineElement) => timelineElement.current === this.currentKeyframe.previous);
+            previousKeyFrame.next = -1;
+            let newTimeline: Array<TimelineElement> = this.timeline.filter((timelineElement: TimelineElement) => timelineElement.current !== this.currentKeyframe.current);
+            this.timeline = newTimeline;
+            this.currentKeyframe = previousKeyFrame;
+            newPosition = (Math.trunc(this.currentPosition / frameRate) - 1) * frameRate;
+            this.frameNumber--;
+        }
+        this.currentPosition = newPosition;
+        let timeline: ServerTimeline = new ServerTimeline(CommonServerVariables.system);
+        if (this.currentKeyframe) {
+            timeline.updatePositionPlayerFromFrame(this);
+        }
+        broadcastEvent("mcbestudio:update_frame_number", {
+            targetClient: this.player.id,
+            frameNumber: this.frameNumber
+        }, this._serverSystem);
     }
 
 

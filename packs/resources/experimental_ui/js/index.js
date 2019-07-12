@@ -186,6 +186,5 @@ engine.on("mcbestudio:notify_current_frame", function (currentFrame) {
 engine.on("mcbestudio:update_modal_value", function (newSize) {
     if (newSize == 100) {
         readMode = true;
-        buttonCallback("readMode : " + readMode);
     }
 });

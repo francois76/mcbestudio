@@ -268,6 +268,12 @@ export class CurrentClient {
     }
 
     deleteCurrentKeyframe() {
+        if (this.isPlayingSequence) {
+            return;
+        }
+        if (this.timelineExtended.length > 0) {
+            this.timelineExtended = new Array();
+        }
         let newPosition: number = 0;
         //Case at the middle of the timeline
         if (this.timeline.length === 0 || this.currentKeyframe === undefined || (this.currentKeyframe.previous == -1 && this.currentKeyframe.next == -1)) {

@@ -31,7 +31,7 @@ export class ClientListeners {
             broadcastEvent('minecraft:load_ui', progressBarOptions, this._clientSystem);
         },
         closeModal() {
-            broadcastEvent("minecraft:unload_ui", { path: "progressBar.html" }, this._clientSystem);
+            broadcastEvent("minecraft:unload_ui", { path: "components/progressBar/progressBar.html" }, this._clientSystem);
         },
         updateModalValue(currentState: number) {
             broadcastEvent("minecraft:send_ui_event", {
@@ -40,7 +40,7 @@ export class ClientListeners {
             }, this._clientSystem);
         },
         leaveFullScreen() {
-            broadcastEvent("minecraft:unload_ui", { path: "blank.html" }, this._clientSystem);
+            broadcastEvent("minecraft:unload_ui", { path: "components/blank/blank.html" }, this._clientSystem);
         },
         notifySequenceEnded() {
             broadcastEvent("minecraft:send_ui_event", { eventIdentifier: "mcbestudio:switch_play_to_pause", data: null }, this._clientSystem);
@@ -89,8 +89,14 @@ export class ClientListeners {
                 uiListeners.goToMoveKeyframe();
             } else if (data === "deleteKeyframeButton") {
                 uiListeners.goToDeleteKeyframe();
+            } else if (data === "deleteAllKeyframesButton") {
+                uiListeners.goToDeleteAllKeyframes();
             } else if (data === "cutButton") {
                 uiListeners.goToCut();
+            } else if (data === "switchToReadMode") {
+                uiListeners.switchToReadMode();
+            } else if (data === "switchToEditMode") {
+                uiListeners.switchToEditMode();
             } else {
                 CommonClientVariables.console.log(data);
             }

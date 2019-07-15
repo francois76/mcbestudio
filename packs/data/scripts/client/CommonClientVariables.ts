@@ -5,4 +5,5 @@ export class CommonClientVariables {
     public static system: IVanillaClientSystem;
     public static clientId: number = -1;
     public static frameNumber: number = 0;
+    public static clientMode: string = "edit";
 }

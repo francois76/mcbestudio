@@ -1,0 +1,43 @@
+.playPause{
+	background-image: url("../../assets/images/play.png");
+}
+
+.playFull{
+	background-image: url("../../assets/images/playfull.png");
+}
+
+.firstFrame{
+	background-image: url("../../assets/images/first.png");
+}
+
+.previousFrame{
+	background-image: url("../../assets/images/previous.png");
+}
+
+.nextFrame{
+	background-image: url("../../assets/images/next.png");
+}
+
+.lastFrame{
+	background-image: url("../../assets/images/last.png");
+}
+
+.moveKeyframe{
+	background-image: url("../../assets/images/move_keyframe.png");
+}
+
+.deleteKeyframe{
+	background-image: url("../../assets/images/delete_keyframe.png");
+}
+
+.deleteAllKeyframes{
+	background-image: url("../../assets/images/delete_all.png");
+}
+
+.cut{
+	background-image: url("../../assets/images/cut.png");
+}
+
+.wallOfFame{
+	background-image: url("../../assets/images/wall_of_fame.png");
+}

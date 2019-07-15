@@ -78,6 +78,11 @@ export class EventManagerProvider {
             server_action: EventAction.LISTEN,
         },
         {
+            name: "mcbestudio:delete_all_keyframes",
+            client_action: EventAction.REGISTER,
+            server_action: EventAction.LISTEN,
+        },
+        {
             name: "mcbestudio:cut_sequence",
             client_action: EventAction.REGISTER,
             server_action: EventAction.LISTEN,

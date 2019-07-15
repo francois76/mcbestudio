@@ -51,7 +51,7 @@ export class ServerListeners {
             CommonServerVariables.connectedClientsdata[playerId].generateSequence();
         },
         deleteSequence(playerId: number) {
-            CommonServerVariables.connectedClientsdata[playerId].resetTimelineData();
+            CommonServerVariables.connectedClientsdata[playerId].removeSequence();
         },
         progressBarOpened(playerId: number) {
             CommonServerVariables.connectedClientsdata[playerId].progressBarOpened();
@@ -80,6 +80,9 @@ export class ServerListeners {
         },
         deleteKeyframe(playerId: number) {
             CommonServerVariables.connectedClientsdata[playerId].deleteCurrentKeyframe();
+        },
+        deleteAllKeyframes(playerId: number) {
+            CommonServerVariables.connectedClientsdata[playerId].deleteAllKeyframes();
         },
         cutSequence(playerId: number) {
             CommonServerVariables.console.log("Ability to add cut in sequence coming soon");

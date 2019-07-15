@@ -1,7 +1,7 @@
 export const frameRate = 240;
 
 export const indexUiOptions = {
-    path: 'index.html', options: {
+    path: 'components/index/index.html', options: {
         always_accepts_input: false,
         render_game_behind: true,
         absorbs_input: true,
@@ -12,7 +12,7 @@ export const indexUiOptions = {
     }
 };
 export const initUiOptions = {
-    path: 'init.html', options: {
+    path: 'components/init/init.html', options: {
         always_accepts_input: false,
         render_game_behind: true,
         absorbs_input: false,
@@ -24,7 +24,7 @@ export const initUiOptions = {
 }
 
 export const blankScreenOptions = {
-    path: 'blank.html', options: {
+    path: 'components/blank/blank.html', options: {
         always_accepts_input: false,
         render_game_behind: true,
         absorbs_input: true,
@@ -36,7 +36,7 @@ export const blankScreenOptions = {
 }
 
 export const progressBarOptions = {
-    path: 'progressBar.html', options: {
+    path: 'components/progressBar/progressBar.html', options: {
         always_accepts_input: false,
         render_game_behind: true,
         absorbs_input: false,
@@ -48,7 +48,7 @@ export const progressBarOptions = {
 }
 
 export const wallOffameOptions = {
-    path: 'wallOfFame.html', options: {
+    path: 'components/wallOfFame/wallOfFame.html', options: {
         always_accepts_input: false,
         render_game_behind: true,
         absorbs_input: true,

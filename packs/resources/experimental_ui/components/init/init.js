@@ -12,11 +12,11 @@ let button = document.getElementById("openButton");
 
 
 // Callback to send the button event to the client script
-let buttonCallback = function (event) {
+let broadcastEvent = function (event) {
     scriptInterface.triggerEvent(event);
 }
 
 // Handle button presses on the ability buttons. Send a specific event for each ability button to the client script.
 button.addEventListener("mouseover", function () {
-    buttonCallback("modStarted");
+    broadcastEvent("modStarted");
 });

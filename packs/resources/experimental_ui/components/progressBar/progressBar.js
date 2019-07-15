@@ -9,5 +9,5 @@ engine.on("facet:updated:core.scripting", function (interface) {
 engine.trigger("facet:request", ["core.scripting"]);
 
 engine.on("mcbestudio:update_modal_value", function (newSize) {
-    document.getElementById("modal-content").style.backgroundImage = 'url("assets/images/modal_' + newSize + '.png")';
+    document.getElementById("modal-content").style.backgroundImage = 'url("../../assets/images/modal_' + newSize + '.png")';
 });

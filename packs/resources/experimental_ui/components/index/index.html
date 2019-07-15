@@ -3,8 +3,10 @@
 
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-	<script src="UIEngine.js"></script>
-	<link rel="stylesheet" href="css/main.css" />
+	<script src="../UIEngine.js"></script>
+	<link rel="stylesheet" href="../main.css" />
+	<link rel="stylesheet" href="index.css" />
+	<link rel="stylesheet" href="imageRef.css" />
 </head>
 
 <body>
@@ -17,9 +19,10 @@
 			<button id="exitButton" class="real-button title-button-alignright">Quit MCBE Studio</button>
 		</div>
 		<div class="tools">
-			<button id="moveKeyframeButton" class="real-button moveKeyframe tools-button"></button>
+			<button id="deleteAllKeyframesButton" class="real-button deleteAllKeyframes tools-button"></button>
 			<button id="deleteKeyframeButton" class="real-button deleteKeyframe tools-button"></button>
-			<button id="cutButton" class="real-button cut tools-button"></button>
+			<button id="moveKeyframeButton" class="real-button moveKeyframe tools-button disabled"></button>
+			<button id="cutButton" class="real-button cut tools-button disabled"></button>
 		</div>
 		<div class="player">
 			<div id="timeline" class="timeline">
@@ -37,10 +40,10 @@
 		<div class="footer">
 			<button id="wallOfFameButton" class="real-button wallOfFame footer-button"></button>
 			<div class="footer-spacer"></div>
-			<span class="version">v 1.12.4</span>
+			<span class="version">v 1.12.5</span>
 		</div>
 	</div>
 </body>
-<script src="js/index.js"></script>
+<script src="index.js"></script>
 
 </html>

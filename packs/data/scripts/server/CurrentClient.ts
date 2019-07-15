@@ -196,17 +196,20 @@ export class CurrentClient {
         }
     }
 
-    resetTimelineData() {
-        this.markers = new Array(); //Permet de stocker les markers
-        this.timeline = new Array(); //Permet de stocker la timeline
-        this.lastframe = -1; //Permet de connaitre l'ID de la dernière frame sauvegardée. Vaut -1 si aucune sauvegardée
-        this.counter = 0; //Compteur incrémental assignant un ID aux nouvelles frames
-        this.currentPosition = 0; //Indique le numéro de frame courante, incrémental peu importe les id (utile pour la timeline)
-        this.frameNumber = 0; //Nombre total de frame(utile pour la timeline)
-        this.currentKeyframe = null; //Indique la keyframe courante
+    removeSequence() {
         this.isPlayingSequence = false; //Notify if the client is playing the sequence
         this.isPlayingSequenceFullScreen = false; //Notify if the client is playing the sequence full screen
         this.timelineExtended = new Array(); //Permet de stocker la timeline "complète" avec toute les transitions
+        this.currentKeyframe = null; //Indique la keyframe courante
+        this.currentPosition = 0; //Indique le numéro de frame courante, incrémental peu importe les id (utile pour la timeline)
+    }
+
+    deleteAllKeyframes() {
+        this.currentKeyframe = null; //Indique la keyframe courante
+        this.frameNumber = 0; //Nombre total de frame(utile pour la timeline)
+        this.lastframe = -1; //Permet de connaitre l'ID de la dernière frame sauvegardée. Vaut -1 si aucune sauvegardée
+        this.timeline = new Array(); //Permet de stocker la timeline
+        this.counter = 0; //Compteur incrémental assignant un ID aux nouvelles frames
     }
 
     generateSequence() {
@@ -277,7 +280,7 @@ export class CurrentClient {
         let newPosition: number = 0;
         //Case at the middle of the timeline
         if (this.timeline.length === 0 || this.currentKeyframe === undefined || (this.currentKeyframe.previous == -1 && this.currentKeyframe.next == -1)) {
-            this.resetTimelineData();
+            this.deleteAllKeyframes();
         } else if (this.currentKeyframe.previous !== -1 && this.currentKeyframe.next !== -1) {
             let previousKeyFrame: TimelineElement = this.timeline.find((timelineElement: TimelineElement) => timelineElement.current === this.currentKeyframe.previous);
             let nextKeyFrame: TimelineElement = this.timeline.find((timelineElement: TimelineElement) => timelineElement.current === this.currentKeyframe.next);

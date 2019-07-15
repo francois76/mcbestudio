@@ -10,11 +10,11 @@ export class UiListeners {
     };
 
     onModExit() {
-        broadcastEvent("minecraft:unload_ui", { path: "index.html" }, CommonClientVariables.system);
+        broadcastEvent("minecraft:unload_ui", { path: "components/index/index.html" }, CommonClientVariables.system);
     };
 
     onEnterPlaceKeyframeMode() {
-        broadcastEvent("minecraft:unload_ui", { path: "index.html" }, CommonClientVariables.system);
+        broadcastEvent("minecraft:unload_ui", { path: "components/index/index.html" }, CommonClientVariables.system);
         broadcastEvent("mcbestudio:enter_place_keyframe_mode", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
     };
 
@@ -47,6 +47,10 @@ export class UiListeners {
             eventIdentifier: "mcbestudio:update_frame_number_ui",
             data: CommonClientVariables.frameNumber
         }, CommonClientVariables.system);
+        broadcastEvent("minecraft:send_ui_event", {
+            eventIdentifier: "mcbestudio:notify_current_mode",
+            data: CommonClientVariables.clientMode
+        }, CommonClientVariables.system);
     }
 
     goToPlay() {
@@ -73,7 +77,7 @@ export class UiListeners {
     }
 
     goToBackButtonWallOfFame() {
-        broadcastEvent("minecraft:unload_ui", { path: "wallOfFame.html" }, CommonClientVariables.system);
+        broadcastEvent("minecraft:unload_ui", { path: "components/wallOfFame/wallOfFame.html" }, CommonClientVariables.system);
     }
 
     progressBarOpened() {
@@ -87,7 +91,17 @@ export class UiListeners {
     goToDeleteKeyframe() {
         broadcastEvent("mcbestudio:delete_keyframe", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
     }
+    goToDeleteAllKeyframes() {
+        broadcastEvent("mcbestudio:delete_all_keyframes", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
+    }
     goToCut() {
         broadcastEvent("mcbestudio:cut_sequence", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
+    }
+    switchToEditMode() {
+        CommonClientVariables.clientMode = "edit";
+    }
+    switchToReadMode() {
+        CommonClientVariables.clientMode = "read";
+
     }
 }

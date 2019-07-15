@@ -1,0 +1,40 @@
+.wall-of-fame-image{
+	width:60vw;
+	height:80vh;
+	display:flex;
+	flex-direction: column;
+	align-items:center;
+	justify-content: center;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 100%;
+	border:solid;
+	border-radius: 2%;
+	background-image: url("../../assets/images/wall_of_fame_content.png");
+}
+
+.wall-of-fame-content{
+	padding: 0;
+	margin: 0;
+	left: 20vw;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-start;
+	position: absolute;
+	top: 3vh;
+	height: 3vh;
+}
+
+.wall-of-fame-navbar{
+	padding: 0;
+	margin: 0;
+	left: 6vw;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-start;
+	position: absolute;
+	bottom: 10vh;
+	height: 3vh;
+}

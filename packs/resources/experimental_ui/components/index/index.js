@@ -33,60 +33,46 @@ let lastFrameButton = document.getElementById("lastFrameButton");
 let wallOfFameButton = document.getElementById("wallOfFameButton");
 let moveKeyframeButton = document.getElementById("moveKeyframeButton");
 let deleteKeyframeButton = document.getElementById("deleteKeyframeButton");
+let deleteAllKeyframesButton = document.getElementById("deleteAllKeyframesButton");
 let cutButton = document.getElementById("cutButton");
 
 // Callback to send the button event to the client script
-let buttonCallback = function (event) {
+let broadcastEvent = function (event) {
     scriptInterface.triggerEvent(event);
 }
 
 // Handle button presses on the ability buttons. Send a specific event for each ability button to the client script.
 exitButton.addEventListener("click", function () {
-    buttonCallback("modExit");
+    broadcastEvent("modExit");
 });
 
 placeKeyframeButton.addEventListener("click", function () {
-    buttonCallback("enterPlaceKeyframeMode");
+    if (!readMode) {
+        broadcastEvent("enterPlaceKeyframeMode");
+    }
 });
 
 generateSequenceButton.addEventListener("click", function () {
-    buttonCallback("generateSequence");
+    if (!readMode) {
+        broadcastEvent("generateSequence");
+    }
 });
 
 deleteSequenceButton.addEventListener("click", function () {
-    if (suppressWarningTriggered) {
-        updateKeyFrameNumber(0);
-        document.getElementById("timeline").textContent = generateUpdatedTimeline();
-        buttonCallback("deleteSequence");
-        deleteSequenceButton.classList.remove('real-button');
-        deleteSequenceButton.classList.add('delete-button-deleted');
-        deleteSequenceButton.textContent = "Sequence deleted"
+    if (readMode) {
+        broadcastEvent("deleteSequence");
         readMode = false;
-        suppressWarningTriggered = false;
-    } else {
-        deleteSequenceButton.classList.remove('real-button');
-        deleteSequenceButton.classList.add('delete-button-confirm');
-        deleteSequenceButton.textContent = "Click again to confirm"
-        suppressWarningTriggered = true;
+        switchToEditMode();
     }
-
-});
-
-deleteSequenceButton.addEventListener("mouseleave", function () {
-    deleteSequenceButton.classList.remove('delete-button-confirm');
-    deleteSequenceButton.classList.remove('delete-button-deleted');
-    deleteSequenceButton.classList.add('real-button');
-    deleteSequenceButton.textContent = "Delete sequence";
-    suppressWarningTriggered = false;
 });
 
 playPauseButton.addEventListener("click", function () {
     if (readMode) {
         updateButtonImage();
         if (isPlayButton) {
-            buttonCallback("pause");
+            broadcastEvent("pause");
         } else {
-            buttonCallback("play");
+            broadcastEvent("play");
         }
     }
 });
@@ -94,57 +80,71 @@ playPauseButton.addEventListener("click", function () {
 playFullButton.addEventListener("click", function () {
     if (readMode) {
         setPlayToPause();
-        buttonCallback("playFull");
+        broadcastEvent("playFull");
     }
 });
 
 firstFrameButton.addEventListener("click", function () {
-    buttonCallback("firstFrame");
+    broadcastEvent("firstFrame");
 });
 
 previousFrameButton.addEventListener("click", function () {
     if (currentKeyFrame > 1) {
-        buttonCallback("previousFrame");
+        broadcastEvent("previousFrame");
     }
 });
 
 nextFrameButton.addEventListener("click", function () {
     if (currentKeyFrame < keyFrameNumber) {
-        buttonCallback("nextFrame");
+        broadcastEvent("nextFrame");
     }
 });
 
 lastFrameButton.addEventListener("click", function () {
-    buttonCallback("lastFrame");
+    broadcastEvent("lastFrame");
 });
 
 wallOfFameButton.addEventListener("click", function () {
-    buttonCallback("wallOfFameButton");
+    broadcastEvent("wallOfFameButton");
 });
 
 moveKeyframeButton.addEventListener("click", function () {
-    buttonCallback("moveKeyframeButton");
+    if (!readMode) {
+        broadcastEvent("moveKeyframeButton");
+    }
 });
 
 deleteKeyframeButton.addEventListener("click", function () {
-    buttonCallback("deleteKeyframeButton");
+    if (!readMode) {
+        broadcastEvent("deleteKeyframeButton");
+    }
+});
+
+deleteAllKeyframesButton.addEventListener("click", function () {
+    if (!readMode) {
+        updateKeyFrameNumber(0);
+        document.getElementById("timeline").textContent = generateUpdatedTimeline();
+        broadcastEvent("deleteAllKeyframesButton");
+    }
 });
 
 cutButton.addEventListener("click", function () {
-    buttonCallback("cutButton");
+    if (!readMode) {
+        broadcastEvent("cutButton");
+    }
 });
 
 updateButtonImage = function () {
     if (isPlayButton) {
-        playPauseButton.style.backgroundImage = 'url("assets/images/pause.png")';
+        playPauseButton.style.backgroundImage = 'url("../../assets/images/pause.png")';
         isPlayButton = false;
     } else {
-        playPauseButton.style.backgroundImage = 'url("assets/images/play.png")';
+        playPauseButton.style.backgroundImage = 'url("../../assets/images/play.png")';
         isPlayButton = true;
     }
 }
 setPlayToPause = function () {
-    playPauseButton.style.backgroundImage = 'url("assets/images/pause.png")';
+    playPauseButton.style.backgroundImage = 'url("../../assets/images/pause.png")';
     isPlayButton = false;
 }
 
@@ -169,6 +169,32 @@ updateKeyFrameNumber = function (keyFrameNumberServer) {
     keyFrameNumber = keyFrameNumberServer;
 }
 
+switchToReadMode = function () {
+    playPauseButton.classList.remove("disabled");
+    playFullButton.classList.remove("disabled");
+    deleteSequenceButton.classList.remove("disabled");
+    placeKeyframeButton.classList.add("disabled");
+    generateSequenceButton.classList.add("disabled");
+    //moveKeyframeButton.classList.add("disabled");
+    deleteKeyframeButton.classList.add("disabled");
+    deleteAllKeyframesButton.classList.add("disabled");
+    //cutButton = document.classList.add("disabled");
+    broadcastEvent("switchToReadMode");
+}
+
+switchToEditMode = function () {
+    playPauseButton.classList.add("disabled");
+    playFullButton.classList.add("disabled");
+    deleteSequenceButton.classList.add("disabled");
+    placeKeyframeButton.classList.remove("disabled");
+    generateSequenceButton.classList.remove("disabled");
+    //moveKeyframeButton.classList.remove("disabled");
+    deleteKeyframeButton.classList.remove("disabled");
+    deleteAllKeyframesButton.classList.remove("disabled");
+    //cutButton = document.classList.remove("disabled");
+    broadcastEvent("switchToEditMode");
+}
+
 engine.on("mcbestudio:update_frame_number_ui", function (frameNumberEventdata) {
     updateKeyFrameNumber(frameNumberEventdata);
     document.getElementById("timeline").textContent = generateUpdatedTimeline();
@@ -186,5 +212,14 @@ engine.on("mcbestudio:notify_current_frame", function (currentFrame) {
 engine.on("mcbestudio:update_modal_value", function (newSize) {
     if (newSize == 100) {
         readMode = true;
+        switchToReadMode();
+    }
+});
+
+engine.on("mcbestudio:notify_current_mode", function (mode) {
+    if (mode == "edit") {
+        switchToEditMode();
+    } else {
+        switchToReadMode();
     }
 });

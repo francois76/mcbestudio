@@ -103,6 +103,18 @@ export function broadcastEvent(name: string, data: any, system: BothSystem) {
     system.broadcastEvent(name, eventData);
 
 }
+
+export function refreshIndexScreen() {
+    broadcastEvent("minecraft:send_ui_event", {
+        eventIdentifier: "mcbestudio:update_frame_number_ui",
+        data: CommonClientVariables.frameNumber
+    }, CommonClientVariables.system);
+    broadcastEvent("minecraft:send_ui_event", {
+        eventIdentifier: "mcbestudio:notify_current_mode",
+        data: CommonClientVariables.clientMode
+    }, CommonClientVariables.system);
+}
+
 function invokeRightListener(eventData: any, name: string, listeners: BothListeners) {
     if (!eventData.data.targetClient || CommonClientVariables.clientId === -1 || CommonClientVariables.clientId === eventData.data.targetClient) {
         let functionName = camelize(name.split(":")[1]);

@@ -1,4 +1,4 @@
-import { broadcastEvent } from "../Utils/Common";
+import { broadcastEvent, refreshIndexScreen } from "../Utils/Common";
 import { initUiOptions, indexUiOptions, progressBarOptions } from "../Const";
 import { CommonClientVariables } from "./CommonClientVariables";
 import { UiListeners } from "./UiListeners";
@@ -24,8 +24,7 @@ export class ClientListeners {
         },
         updateFrameNumber(frameNumber: number) {
             CommonClientVariables.frameNumber = frameNumber;
-            const uiListeners: UiListeners = new UiListeners();
-            uiListeners.indexUiOpened();
+            refreshIndexScreen();
         },
         openModal() {
             broadcastEvent('minecraft:load_ui', progressBarOptions, this._clientSystem);

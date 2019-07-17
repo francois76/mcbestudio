@@ -85,23 +85,27 @@ playFullButton.addEventListener("click", function () {
 });
 
 firstFrameButton.addEventListener("click", function () {
-    broadcastEvent("firstFrame");
+    if (keyFrameNumber >= 2) {
+        broadcastEvent("firstFrame");
+    }
 });
 
 previousFrameButton.addEventListener("click", function () {
-    if (currentKeyFrame > 1) {
+    if (keyFrameNumber >= 2 && currentKeyFrame > 1) {
         broadcastEvent("previousFrame");
     }
 });
 
 nextFrameButton.addEventListener("click", function () {
-    if (currentKeyFrame < keyFrameNumber) {
+    if (keyFrameNumber >= 2 && currentKeyFrame < keyFrameNumber) {
         broadcastEvent("nextFrame");
     }
 });
 
 lastFrameButton.addEventListener("click", function () {
-    broadcastEvent("lastFrame");
+    if (keyFrameNumber >= 2) {
+        broadcastEvent("lastFrame");
+    }
 });
 
 wallOfFameButton.addEventListener("click", function () {
@@ -115,13 +119,13 @@ moveKeyframeButton.addEventListener("click", function () {
 });
 
 deleteKeyframeButton.addEventListener("click", function () {
-    if (!readMode) {
+    if (!readMode && keyFrameNumber > 0) {
         broadcastEvent("deleteKeyframeButton");
     }
 });
 
 deleteAllKeyframesButton.addEventListener("click", function () {
-    if (!readMode) {
+    if (!readMode && keyFrameNumber > 0) {
         updateKeyFrameNumber(0);
         document.getElementById("timeline").textContent = generateUpdatedTimeline();
         broadcastEvent("deleteAllKeyframesButton");
@@ -167,6 +171,16 @@ generateUpdatedTimeline = function () {
 
 updateKeyFrameNumber = function (keyFrameNumberServer) {
     keyFrameNumber = keyFrameNumberServer;
+    if (keyFrameNumber == 0) {
+        disableEditionButtons();
+        disableNavigationButtons();
+    } else if (keyFrameNumber == 1) {
+        enableEditionButtons();
+        disableNavigationButtons();
+    } else {
+        enableEditionButtons();
+        enableNavigationButtons();
+    }
 }
 
 switchToReadMode = function () {
@@ -194,6 +208,31 @@ switchToEditMode = function () {
     //cutButton = document.classList.remove("disabled");
     broadcastEvent("switchToEditMode");
 }
+
+disableNavigationButtons = function () {
+    lastFrameButton.classList.add("disabled");
+    nextFrameButton.classList.add("disabled");
+    previousFrameButton.classList.add("disabled");
+    firstFrameButton.classList.add("disabled");
+}
+
+enableNavigationButtons = function () {
+    lastFrameButton.classList.remove("disabled");
+    nextFrameButton.classList.remove("disabled");
+    previousFrameButton.classList.remove("disabled");
+    firstFrameButton.classList.remove("disabled");
+}
+
+disableEditionButtons = function () {
+    deleteKeyframeButton.classList.add("disabled1");
+    deleteAllKeyframesButton.classList.add("disabled1");
+}
+
+enableEditionButtons = function () {
+    deleteKeyframeButton.classList.remove("disabled1");
+    deleteAllKeyframesButton.classList.remove("disabled1");
+}
+
 
 engine.on("mcbestudio:update_frame_number_ui", function (frameNumberEventdata) {
     updateKeyFrameNumber(frameNumberEventdata);

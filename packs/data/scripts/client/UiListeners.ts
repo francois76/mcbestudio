@@ -1,4 +1,4 @@
-import { broadcastEvent } from "../Utils/Common";
+import { broadcastEvent, refreshIndexScreen } from "../Utils/Common";
 import { CommonClientVariables } from "./CommonClientVariables";
 import { indexUiOptions, blankScreenOptions, wallOffameOptions } from "../Const";
 
@@ -43,14 +43,8 @@ export class UiListeners {
     }
 
     indexUiOpened() {
-        broadcastEvent("minecraft:send_ui_event", {
-            eventIdentifier: "mcbestudio:update_frame_number_ui",
-            data: CommonClientVariables.frameNumber
-        }, CommonClientVariables.system);
-        broadcastEvent("minecraft:send_ui_event", {
-            eventIdentifier: "mcbestudio:notify_current_mode",
-            data: CommonClientVariables.clientMode
-        }, CommonClientVariables.system);
+        refreshIndexScreen();
+        broadcastEvent("mcbestudio:go_to_first_frame", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
     }
 
     goToPlay() {

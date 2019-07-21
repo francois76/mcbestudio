@@ -96,6 +96,10 @@ export class ClientListeners {
                 uiListeners.switchToReadMode();
             } else if (data === "switchToEditMode") {
                 uiListeners.switchToEditMode();
+            } else if (data === "noButton") {
+                uiListeners.goToNoButton();
+            } else if (data === "yesButton") {
+                uiListeners.goToYesButton();
             } else {
                 CommonClientVariables.console.log(data);
             }

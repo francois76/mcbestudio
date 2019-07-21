@@ -1,6 +1,6 @@
 import { broadcastEvent, refreshIndexScreen } from "../Utils/Common";
 import { CommonClientVariables } from "./CommonClientVariables";
-import { indexUiOptions, blankScreenOptions, wallOffameOptions } from "../Const";
+import { indexUiOptions, blankScreenOptions, wallOffameOptions, confirmModalOptions } from "../Const";
 
 export class UiListeners {
 
@@ -86,7 +86,7 @@ export class UiListeners {
         broadcastEvent("mcbestudio:delete_keyframe", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
     }
     goToDeleteAllKeyframes() {
-        broadcastEvent("mcbestudio:delete_all_keyframes", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
+        broadcastEvent("minecraft:load_ui", confirmModalOptions, CommonClientVariables.system);
     }
     goToCut() {
         broadcastEvent("mcbestudio:cut_sequence", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
@@ -97,5 +97,17 @@ export class UiListeners {
     switchToReadMode() {
         CommonClientVariables.clientMode = "read";
 
+    }
+    goToYesButton() {
+        broadcastEvent("minecraft:unload_ui", { path: "components/confirmModal/confirmModal.html" }, CommonClientVariables.system);
+        broadcastEvent("mcbestudio:delete_all_keyframes", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
+        CommonClientVariables.frameNumber = 0;
+        broadcastEvent("minecraft:send_ui_event", {
+            eventIdentifier: "mcbestudio:all_keyframes_deleted",
+            data: ""
+        }, CommonClientVariables.system);
+    }
+    goToNoButton() {
+        broadcastEvent("minecraft:unload_ui", { path: "components/confirmModal/confirmModal.html" }, CommonClientVariables.system);
     }
 }

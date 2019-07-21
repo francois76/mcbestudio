@@ -126,8 +126,6 @@ deleteKeyframeButton.addEventListener("click", function () {
 
 deleteAllKeyframesButton.addEventListener("click", function () {
     if (!readMode && keyFrameNumber > 0) {
-        updateKeyFrameNumber(0);
-        document.getElementById("timeline").textContent = generateUpdatedTimeline();
         broadcastEvent("deleteAllKeyframesButton");
     }
 });
@@ -237,6 +235,9 @@ enableEditionButtons = function () {
 engine.on("mcbestudio:update_frame_number_ui", function (frameNumberEventdata) {
     updateKeyFrameNumber(frameNumberEventdata);
     document.getElementById("timeline").textContent = generateUpdatedTimeline();
+    if (frameNumberEventdata == 0) {
+        disableEditionButtons();
+    }
 });
 
 engine.on("mcbestudio:switch_play_to_pause", function (eventdata) {
@@ -255,10 +256,17 @@ engine.on("mcbestudio:update_modal_value", function (newSize) {
     }
 });
 
+engine.on("mcbestudio:all_keyframes_deleted", function (newSize) {
+    updateKeyFrameNumber(0);
+    document.getElementById("timeline").textContent = generateUpdatedTimeline();
+});
+
 engine.on("mcbestudio:notify_current_mode", function (mode) {
     if (mode == "edit") {
+        readMode = false;
         switchToEditMode();
     } else {
+        readMode = true;
         switchToReadMode();
     }
 });

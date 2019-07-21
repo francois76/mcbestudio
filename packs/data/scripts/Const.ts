@@ -58,3 +58,15 @@ export const wallOffameOptions = {
         render_only_when_topmost: false
     }
 }
+
+export const confirmModalOptions = {
+    path: 'components/confirmModal/confirmModal.html', options: {
+        always_accepts_input: false,
+        render_game_behind: true,
+        absorbs_input: true,
+        is_showing_menu: false,
+        should_steal_mouse: false,
+        force_render_below: true,
+        render_only_when_topmost: false
+    }
+}

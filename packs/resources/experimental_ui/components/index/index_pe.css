@@ -1,0 +1,54 @@
+.titlebar-spacer{
+	width: 30vw;	
+}
+
+.footer{
+    left: 20vw;
+    bottom: 5vh;
+	height: 5vh;
+}
+
+.timeline-button{
+	width:5vw;
+	height: 8vh;
+	margin-left: 0.9vw;
+	margin-right: 0.9vw;
+	background-repeat: no-repeat;
+	background-position: center;	
+	background-size: 100%;
+}
+
+.timeline{
+	font-size: 6vh;
+	margin-bottom: 3vh;
+}
+
+.tools{
+	margin-left: 1vw;
+	bottom: 30vh;
+	height: 12vh;
+}
+
+.tools-button{
+	width:5vw;
+	height: 8vh;
+	margin-left: 0.9vw;
+	margin-right: 0.9vw;
+	background-size: 100%;
+}
+
+.footer-spacer{
+	width: 45vw;	
+}
+
+.footer-button{
+	width:5vw;
+	height: 8vh;
+	margin-left: 0.9vw;
+	margin-right: 0.9vw;
+	background-size: 100%;	
+}
+
+.player{
+    bottom: 10vh;
+}

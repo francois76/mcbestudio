@@ -152,8 +152,10 @@ setPlayToPause = function () {
 
 generateUpdatedTimeline = function () {
     generatedTimeLine = "";
-    if (keyFrameNumber === 0) {
+    if (keyFrameNumber == 0) {
         timelineIndex = -1;
+    } else if (keyFrameNumber == 1) {
+        timelineIndex = 0;
     } else {
         timelineIndex = Math.floor((currentKeyFrame - 1) * ((rawTimeLineLength / (keyFrameNumber - 1))));
     }

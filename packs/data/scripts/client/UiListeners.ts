@@ -1,6 +1,6 @@
 import { broadcastEvent, refreshIndexScreen } from "../Utils/Common";
 import { CommonClientVariables } from "./CommonClientVariables";
-import { indexUiOptions, blankScreenOptions, wallOffameOptions, confirmModalOptions } from "../Const";
+import { indexUiOptions, blankScreenOptions, wallOffameOptions, confirmModalOptions, ui_suffix } from "../Const";
 
 export class UiListeners {
 
@@ -10,11 +10,11 @@ export class UiListeners {
     };
 
     onModExit() {
-        broadcastEvent("minecraft:unload_ui", { path: "components/index/index.html" }, CommonClientVariables.system);
+        broadcastEvent("minecraft:unload_ui", { path: "components/index/index" + ui_suffix + ".html" }, CommonClientVariables.system);
     };
 
     onEnterPlaceKeyframeMode() {
-        broadcastEvent("minecraft:unload_ui", { path: "components/index/index.html" }, CommonClientVariables.system);
+        broadcastEvent("minecraft:unload_ui", { path: "components/index/index" + ui_suffix + ".html" }, CommonClientVariables.system);
         broadcastEvent("mcbestudio:enter_place_keyframe_mode", { id: CommonClientVariables.clientId }, CommonClientVariables.system);
     };
 

@@ -1,7 +1,8 @@
 export const frameRate = 240;
+export const ui_suffix = "";
 
 export const indexUiOptions = {
-    path: 'components/index/index.html', options: {
+    path: 'components/index/index' + ui_suffix + '.html', options: {
         always_accepts_input: false,
         render_game_behind: true,
         absorbs_input: true,

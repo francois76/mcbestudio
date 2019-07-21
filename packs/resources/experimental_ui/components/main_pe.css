@@ -1,0 +1,18 @@
+.title-button-alignleft{
+	width:12vw;
+	height: 12vh;
+}
+
+.title-button-alignright{
+	width:12vw;
+	height: 12vh;
+	margin-left: 2vw;
+}
+
+.titlebar{
+	top: 6vh;
+}
+
+.real-button{
+	font-size: 3vh;
+}

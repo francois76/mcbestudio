@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <script src="../UIEngine.js"></script>
+    <link rel="stylesheet" href="../main.css" />
+    <link rel="stylesheet" href="../main_pe.css" />
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="index_pe.css" />
+    <link rel="stylesheet" href="imageRef.css" />
+</head>
+
+<body>
+    <div class="gameWindow">
+        <div class="titlebar">
+            <div class="titlebar-spacer"></div>
+            <button id="deleteSequenceButton" class="real-button title-button-alignright">Delete sequence</button>
+            <button id="generateSequenceButton" class="real-button title-button-alignright">Generate sequence</button>
+            <button id="placeKeyframeButton" class="real-button title-button-alignright">Place Keyframe</button>
+            <button id="exitButton" class="real-button title-button-alignright">Quit MCBE Studio</button>
+        </div>
+        <div class="tools">
+            <button id="deleteAllKeyframesButton" class="real-button deleteAllKeyframes tools-button"></button>
+            <button id="deleteKeyframeButton" class="real-button deleteKeyframe tools-button"></button>
+            <button id="moveKeyframeButton" class="real-button moveKeyframe tools-button disabled"></button>
+            <button id="cutButton" class="real-button cut tools-button disabled"></button>
+        </div>
+        <div class="player">
+            <div id="timeline" class="timeline">
+                [-----------------------------------------]
+            </div>
+            <div class="timeline-control">
+                <button id="playFullButton" class="real-button playFull timeline-button"></button>
+                <button id="playPauseButton" class="real-button playPause timeline-button"></button>
+                <button id="firstFrameButton" class="real-button firstFrame timeline-button"></button>
+                <button id="previousFrameButton" class="real-button previousFrame timeline-button"></button>
+                <button id="nextFrameButton" class="real-button nextFrame timeline-button"></button>
+                <button id="lastFrameButton" class="real-button lastFrame timeline-button"></button>
+            </div>
+        </div>
+        <div class="footer">
+            <button id="wallOfFameButton" class="real-button wallOfFame footer-button"></button>
+            <div class="footer-spacer"></div>
+            <span class="version">v 1.12.5</span>
+        </div>
+    </div>
+</body>
+<script src="index.js"></script>
+
+</html>

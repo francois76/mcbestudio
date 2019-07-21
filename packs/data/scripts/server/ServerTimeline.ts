@@ -42,6 +42,10 @@ export class ServerTimeline {
       this.goToLastFrame(currentClient);
     }
     let newPosition: number = (Math.trunc(currentClient.currentPosition / frameRate) - 1) * frameRate
+    if (newPosition < 0) {
+      this.goToFirstFrame(currentClient);
+      return;
+    }
     currentClient.currentPosition = newPosition;
     let newCurrentKeyframeid = currentClient.currentKeyframe.previous;
     currentClient.currentKeyframe = currentClient.timeline.find((keyframe: TimelineElement) => keyframe !== undefined && keyframe.current == newCurrentKeyframeid);

@@ -200,7 +200,6 @@ export class CurrentClient {
         this.isPlayingSequence = false; //Notify if the client is playing the sequence
         this.isPlayingSequenceFullScreen = false; //Notify if the client is playing the sequence full screen
         this.timelineExtended = new Array(); //Permet de stocker la timeline "complète" avec toute les transitions
-        this.currentKeyframe = null; //Indique la keyframe courante
         this.currentPosition = 0; //Indique le numéro de frame courante, incrémental peu importe les id (utile pour la timeline)
     }
 

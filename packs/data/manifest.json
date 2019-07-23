@@ -1,13 +1,13 @@
 {
     "format_version": 1,
     "header": {
-        "description": "1.12.5",
+        "description": "1.12.6",
         "name": "MCBE Studio",
         "uuid": "aee3d44d-7867-44f6-a7d7-879226280568",
         "version": [
             1,
             12,
-            5
+            6
         ],
         "min_engine_version": [
             1,
@@ -23,7 +23,7 @@
             "version": [
                 1,
                 12,
-                5
+                6
             ]
         },
         {
@@ -33,7 +33,7 @@
             "version": [
                 1,
                 12,
-                5
+                6
             ]
         }
     ],
@@ -43,7 +43,7 @@
             "version": [
                 1,
                 12,
-                5
+                6
             ]
         }
     ]

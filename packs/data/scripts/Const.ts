@@ -1,5 +1,6 @@
 export const frameRate = 240;
 export const ui_suffix = "";
+//export const ui_suffix = "_pe";
 
 export const indexUiOptions = {
     path: 'components/index/index' + ui_suffix + '.html', options: {

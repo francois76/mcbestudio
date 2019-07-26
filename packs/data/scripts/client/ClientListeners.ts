@@ -1,9 +1,9 @@
-import { broadcastEvent, refreshIndexScreen } from "../Utils/Common";
+import { broadcastEvent } from "../Common/Common";
 import { initUiOptions, indexUiOptions, progressBarOptions } from "../Const";
 import { CommonClientVariables } from "./CommonClientVariables";
 import { UiListeners } from "./UiListeners";
-import { CurrentClient } from "../server/CurrentClient";
-import { AbstractListener } from "../Utils/AbstractListener";
+import { AbstractListener } from "../Common/AbstractListener";
+import { refreshIndexScreen } from "./ClientTools";
 
 export class ClientListeners extends AbstractListener {
 

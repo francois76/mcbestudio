@@ -1,12 +1,12 @@
 /// <reference types="minecraft-scripting-types-Server" />
 
-import { CustomConsole } from "../Utils/CustomConsole";
+import { CustomConsole } from "../Common/CustomConsole";
 import { ServerTimeline } from "./serverTimeline";
 import { CurrentClient } from "./CurrentClient";
-import { initEvents } from "../Utils/Common";
+import { initEvents } from "../Common/Common";
 import { ServerListeners } from "./ServerListeners";
 import { CommonServerVariables } from "./CommonServerVariables";
-import { System } from "../Enums";
+import { System } from "../api/Enums";
 
 
 namespace Server {

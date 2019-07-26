@@ -1,7 +1,8 @@
-import { broadcastEvent, refreshIndexScreen } from "../Utils/Common";
+import { broadcastEvent } from "../Common/Common";
 import { CommonClientVariables } from "./CommonClientVariables";
 import { indexUiOptions, blankScreenOptions, wallOffameOptions, confirmModalOptions, ui_suffix } from "../Const";
-import { AbstractListener } from "../Utils/AbstractListener";
+import { AbstractListener } from "../Common/AbstractListener";
+import { refreshIndexScreen } from "./ClientTools";
 
 export class UiListeners extends AbstractListener {
 

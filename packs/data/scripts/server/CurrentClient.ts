@@ -1,10 +1,10 @@
 
 import { CommonServerVariables } from "./CommonServerVariables";
-import { PositionRotationObject, IMarker, TimelineElement } from "../Interfaces";
-import { generateMarker, updateModalValue, sendTimelineUpdate, updatePlayerFollower, broadcastEvent } from "../Utils/Common";
-import { subdiviseIntervals, subdiviseIntervalsRotY } from "../Utils/MathUtils";
+import { PositionRotationObject, IMarker, TimelineElement } from "../api/Interfaces";
+import { broadcastEvent } from "../common/Common";
 import { frameRate } from "../Const";
 import { ServerTimeline } from "./ServerTimeline";
+import { generateMarker, sendTimelineUpdate, subdiviseIntervals, subdiviseIntervalsRotY, updateModalValue, updatePlayerFollower } from "./ServerTools";
 export class CurrentClient {
     constructor(private _serverSystem: IVanillaServerSystem,
         public isPlacingKeyframe: boolean,

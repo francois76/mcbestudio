@@ -1,5 +1,5 @@
-import { EventManagerElement } from "./../interfaces";
-import { EventAction } from "./../Enums";
+import { EventManagerElement } from "../api/Interfaces";
+import { EventAction } from "../api/Enums";
 
 export class EventManagerProvider {
     public static eventList: Array<EventManagerElement> = [

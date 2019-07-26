@@ -1,5 +1,5 @@
 import { CurrentClient } from "./CurrentClient";
-import { CustomConsole } from "../Utils/CustomConsole";
+import { CustomConsole } from "../Common/CustomConsole";
 import { ServerTimeline } from "./ServerTimeline";
 
 export class CommonServerVariables {

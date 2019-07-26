@@ -1,10 +1,10 @@
 /// <reference types="minecraft-scripting-types-Client" />
 
-import { CustomConsole } from "../Utils/CustomConsole";
-import { initEvents } from "../Utils/Common";
+import { CustomConsole } from "../Common/CustomConsole";
+import { initEvents } from "../Common/Common";
 import { ClientListeners } from "./ClientListeners";
 import { CommonClientVariables } from "./CommonClientVariables";
-import { System } from "../Enums";
+import { System } from "../api/Enums";
 
 
 namespace Client {

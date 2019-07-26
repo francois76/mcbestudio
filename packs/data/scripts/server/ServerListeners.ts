@@ -1,7 +1,7 @@
 import { CurrentClient } from "./CurrentClient";
 import { CommonServerVariables } from "./CommonServerVariables";
-import { IMarker, TimelineElement, PositionRotationObject } from "../Interfaces";
-import { AbstractListener } from "../Utils/AbstractListener";
+import { IMarker, TimelineElement, PositionRotationObject } from "../api/Interfaces";
+import { AbstractListener } from "../Common/AbstractListener";
 
 export class ServerListeners extends AbstractListener {
 

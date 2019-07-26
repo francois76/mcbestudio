@@ -1,9 +1,8 @@
 import { frameRate } from "../Const";
-import { CustomConsole } from "../Utils/CustomConsole";
 import { CurrentClient } from "./CurrentClient";
-import { PositionRotationObject, IMarker, TimelineElement } from "../Interfaces";
-import { sendTimelineUpdate, summonPlayerFollower } from "../Utils/Common";
-import { CommonServerVariables } from "./CommonServerVariables";
+import { CustomConsole } from "../common/CustomConsole";
+import { TimelineElement } from "../api/Interfaces";
+import { sendTimelineUpdate, summonPlayerFollower } from "./ServerTools";
 export class ServerTimeline {
 
   console: CustomConsole = new CustomConsole(this._serverSystem);

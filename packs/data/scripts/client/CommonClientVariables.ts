@@ -1,4 +1,4 @@
-import { CustomConsole } from "../Utils/CustomConsole";
+import { CustomConsole } from "../Common/CustomConsole";
 
 export class CommonClientVariables {
     public static console: CustomConsole;

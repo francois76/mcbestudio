@@ -24,7 +24,7 @@ namespace Server {
     CommonServerVariables.serverTimeline = serverTimeLine;
     CommonServerVariables.system = serverSystem;
     console.initLogger();
-    initEvents(System.SERVER, new ServerListeners(serverSystem));
+    initEvents(System.SERVER, new ServerListeners());
     serverSystem.registerComponent("mcbestudio:triggerer", { targetClient: 0, role: "" });
     serverSystem.registerComponent("mcbestudio:keyframe", { targetClient: 0, previous: 0, next: 0, current: 0 });
   };

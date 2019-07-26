@@ -16,6 +16,6 @@ namespace Client {
     console.initLogger();
     CommonClientVariables.console = console;
     CommonClientVariables.system = clientSystem;
-    initEvents(System.CLIENT, new ClientListeners(clientSystem));
+    initEvents(System.CLIENT, new ClientListeners());
   };
 }

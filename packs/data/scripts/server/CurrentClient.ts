@@ -24,7 +24,7 @@ export class CurrentClient {
         public posZ: number,
         public isPlayingSequenceFullScreen: boolean,
         public isPlayingSequence: boolean,
-        public playerFollower: IEntity
+        public playerFollower: IEntity,
     ) {
     }
 
@@ -223,6 +223,7 @@ export class CurrentClient {
         let pz: Array<number> = new Array();
         let rx: Array<number> = new Array();
         let ry: Array<number> = new Array();
+        let jump: Array<boolean> = new Array();
         let currentKeyframe: TimelineElement = this.timeline.find((keyframe: TimelineElement) => keyframe.previous == -1);
         let next: number = currentKeyframe["current"];
         while (currentKeyframe.next != -1) {
@@ -232,13 +233,24 @@ export class CurrentClient {
             pz.push(currentKeyframe.positionComponent.data.z);
             rx.push(currentKeyframe.rotationComponent.data.x);
             ry.push(currentKeyframe.rotationComponent.data.y);
+            if (currentKeyframe.nextFrameToJump) {
+                currentKeyframe = currentKeyframe.nextFrameToJump;
+                px.push(currentKeyframe.positionComponent.data.x);
+                py.push(currentKeyframe.positionComponent.data.y);
+                pz.push(currentKeyframe.positionComponent.data.z);
+                rx.push(currentKeyframe.rotationComponent.data.x);
+                ry.push(currentKeyframe.rotationComponent.data.y);
+                jump.push(true);
+            }
+            jump.push(false);
             next = currentKeyframe.next;
         }
-        let pxe: Array<number> = subdiviseIntervals(px, frameRate);
-        let pye: Array<number> = subdiviseIntervals(py, frameRate);
-        let pze: Array<number> = subdiviseIntervals(pz, frameRate);
-        let rxe: Array<number> = subdiviseIntervals(rx, frameRate);
-        let rye: Array<number> = subdiviseIntervalsRotY(ry, frameRate);
+        CommonServerVariables.console.log(jump);
+        let pxe: Array<number> = subdiviseIntervals(px, frameRate, jump);
+        let pye: Array<number> = subdiviseIntervals(py, frameRate, jump);
+        let pze: Array<number> = subdiviseIntervals(pz, frameRate, jump);
+        let rxe: Array<number> = subdiviseIntervals(rx, frameRate, jump);
+        let rye: Array<number> = subdiviseIntervalsRotY(ry, frameRate, jump);
         let i: number = 0;
         for (let i: number = 0; i < pxe.length; i++) {
 
@@ -317,6 +329,15 @@ export class CurrentClient {
             targetClient: this.player.id,
             frameNumber: this.frameNumber
         }, this._serverSystem);
+    }
+
+    cutSequence() {
+        if (this.currentKeyframe.previous != -1) {
+            let previousKeyFrame: TimelineElement = this.timeline.find((timelineElement: TimelineElement) => timelineElement.current === this.currentKeyframe.previous);
+            previousKeyFrame.nextFrameToJump = this.currentKeyframe;
+            this.deleteCurrentKeyframe();
+            CommonServerVariables.console.log(this.currentKeyframe);
+        }
     }
 
 

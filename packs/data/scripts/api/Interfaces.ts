@@ -11,7 +11,8 @@ export interface TimelineElement {
     rotationComponent: IComponent<IRotationComponent>,
     next: number,
     previous: number,
-    current: number
+    current: number,
+    nextFrameToJump: TimelineElement
 }
 
 

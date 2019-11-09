@@ -192,7 +192,7 @@ switchToReadMode = function () {
     //moveKeyframeButton.classList.add("disabled");
     deleteKeyframeButton.classList.add("disabled");
     deleteAllKeyframesButton.classList.add("disabled");
-    //cutButton = document.classList.add("disabled");
+    cutButton = document.classList.add("disabled");
     broadcastEvent("switchToReadMode");
 }
 
@@ -205,7 +205,7 @@ switchToEditMode = function () {
     //moveKeyframeButton.classList.remove("disabled");
     deleteKeyframeButton.classList.remove("disabled");
     deleteAllKeyframesButton.classList.remove("disabled");
-    //cutButton = document.classList.remove("disabled");
+    cutButton = document.classList.remove("disabled");
     broadcastEvent("switchToEditMode");
 }
 
@@ -226,11 +226,13 @@ enableNavigationButtons = function () {
 disableEditionButtons = function () {
     deleteKeyframeButton.classList.add("disabled1");
     deleteAllKeyframesButton.classList.add("disabled1");
+    cutButton = document.classList.add("disabled1");
 }
 
 enableEditionButtons = function () {
     deleteKeyframeButton.classList.remove("disabled1");
     deleteAllKeyframesButton.classList.remove("disabled1");
+    cutButton = document.classList.remove("disabled1");
 }
 
 

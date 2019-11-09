@@ -1,5 +1,6 @@
 import { CurrentClient } from "../server/CurrentClient";
 import { broadcastEvent } from "../Common/Common";
+import { CommonServerVariables } from "./CommonServerVariables";
 
 export function generateMarker(_serverSystem: IVanillaServerSystem, player: IEntity, name: string, rotation: number, role: string) {
     let playerPositionComponent: IComponent<IPositionComponent> = _serverSystem.getComponent(player, MinecraftComponent.Position);
@@ -60,17 +61,23 @@ export function updatePlayerFollower(_serverSystem: IVanillaServerSystem, client
     _serverSystem.applyComponentChanges(client.playerFollower, playerPositionComponent);
 }
 
-export function subdiviseIntervals(array: Array<number>, slices: number) {
+export function subdiviseIntervals(array: Array<number>, slices: number, jump: Array<boolean>) {
     let newArray: Array<number> = new Array();
     let i: number = 0;
     while (array[i] && array[i + 1]) {
-        let delta: number = array[i + 1] - array[i];
-        let subInterval: number = delta / slices;
-        let p: number = 0;
-        while (p != slices - 1) {
-            newArray.push(array[i] + (p * subInterval));
-            p++;
+        if (jump[i]) {
+            CommonServerVariables.console.log("test");
+            newArray.push(array[i]);
+        } else {
+            let delta: number = array[i + 1] - array[i];
+            let subInterval: number = delta / slices;
+            let p: number = 0;
+            while (p != slices - 1) {
+                newArray.push(array[i] + (p * subInterval));
+                p++;
+            }
         }
+
         i++;
     }
     if (array[i]) {
@@ -81,7 +88,7 @@ export function subdiviseIntervals(array: Array<number>, slices: number) {
 }
 
 //Cas particulier de la rotation y pour prendre en compte le passage -180/0
-export function subdiviseIntervalsRotY(array: Array<number>, slices: number) {
+export function subdiviseIntervalsRotY(array: Array<number>, slices: number, jump: Array<boolean>) {
     let newArray: Array<number> = new Array();
     let cosArray: Array<number> = new Array();
     let sinArray: Array<number> = new Array();
@@ -89,8 +96,8 @@ export function subdiviseIntervalsRotY(array: Array<number>, slices: number) {
         cosArray[i] = Math.cos((Math.PI * array[i]) / 180);
         sinArray[i] = Math.sin((Math.PI * array[i]) / 180);
     }
-    let cosArrayUpdated: Array<number> = subdiviseIntervals(cosArray, slices);
-    let sinArrayUpdated: Array<number> = subdiviseIntervals(sinArray, slices);
+    let cosArrayUpdated: Array<number> = subdiviseIntervals(cosArray, slices, jump);
+    let sinArrayUpdated: Array<number> = subdiviseIntervals(sinArray, slices, jump);
     for (let i = 0; i < cosArrayUpdated.length; i++) {
         if (cosArrayUpdated[i] === 0) {
             if (sinArrayUpdated[i] === 1) {

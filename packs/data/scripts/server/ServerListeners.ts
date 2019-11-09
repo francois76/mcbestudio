@@ -37,7 +37,7 @@ export class ServerListeners extends AbstractListener {
                     playerPositionComponent.data.z,
                     false, //Notify if the client is playing the sequence full screen
                     false, //Notify if the client is playing the sequence
-                    null
+                    null,
                 );
             },
             enterPlaceKeyframeMode(playerId: number) {
@@ -81,7 +81,7 @@ export class ServerListeners extends AbstractListener {
                 CommonServerVariables.connectedClientsdata[playerId].deleteAllKeyframes();
             },
             cutSequence(playerId: number) {
-                CommonServerVariables.console.log("Ability to add cut in sequence coming soon");
+                CommonServerVariables.connectedClientsdata[playerId].cutSequence();
             },
 
         }

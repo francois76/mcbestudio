@@ -1,5 +1,5 @@
 # MCBE Studio
-MCBE Studio is an addon for Minecraft Bedrock 1.12 that make timelapses possible on the bedrock edition of the game. As the scripting API is still quite simple, this addon couldn't be compared with what replaymod can do on java, but this addon make possible to place keyframes in the world that are interpolated to generate a sequence.
+MCBE Studio is an addon for Minecraft Bedrock 1.13 that make timelapses possible on the bedrock edition of the game. As the scripting API is still quite simple, this addon couldn't be compared with what replaymod can do on java, but this addon make possible to place keyframes in the world that are interpolated to generate a sequence.
 
 
 ## How to use :

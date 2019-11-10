@@ -118,6 +118,12 @@ export function refreshIndexScreen() {
 function invokeRightListener(eventData: any, name: string, listeners: BothListeners) {
     if (!eventData.data.targetClient || CommonClientVariables.clientId === -1 || CommonClientVariables.clientId === eventData.data.targetClient) {
         let functionName = camelize(name.split(":")[1]);
+        if (CommonClientVariables && CommonClientVariables.console) {
+            CommonClientVariables.console.log(functionName);
+        }
+        if (CommonServerVariables && CommonServerVariables.console) {
+            CommonServerVariables.console.log(functionName);
+        }
         if (!(eventData.data instanceof Object)) {
             let params: Array<any> = new Array();
             params.push(eventData.data);

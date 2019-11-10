@@ -6,6 +6,7 @@ export class UiListeners {
 
 
     onModStarted() {
+        //broadcastEvent("minecraft:unload_ui", { path: "components/init/init" + ".html" }, CommonClientVariables.system);
         broadcastEvent("minecraft:load_ui", indexUiOptions, CommonClientVariables.system);
     };
 

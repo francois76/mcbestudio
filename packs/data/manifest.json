@@ -1,17 +1,17 @@
 {
-    "format_version": 1,
+    "format_version": 2,
     "header": {
-        "description": "1.12.5",
+        "description": "1.13.1",
         "name": "MCBE Studio",
         "uuid": "aee3d44d-7867-44f6-a7d7-879226280568",
         "version": [
             1,
-            12,
-            5
+            13,
+            1
         ],
         "min_engine_version": [
             1,
-            12,
+            13,
             0
         ]
     },
@@ -22,8 +22,8 @@
             "uuid": "a9d77e0c-d9ab-49d8-a269-3c8e84a992a5",
             "version": [
                 1,
-                12,
-                5
+                13,
+                1
             ]
         },
         {
@@ -32,8 +32,8 @@
             "uuid": "8bfa4987-71b9-45b7-9b43-da958cd3aafd",
             "version": [
                 1,
-                12,
-                5
+                13,
+                1
             ]
         }
     ],
@@ -42,8 +42,8 @@
             "uuid": "00b07d04-3873-493d-ae10-797a09d5b7b9",
             "version": [
                 1,
-                12,
-                5
+                13,
+                1
             ]
         }
     ]

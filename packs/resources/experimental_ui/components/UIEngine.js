@@ -7,17 +7,23 @@ if (environment !== "Minecraft") {
 	engine.TriggerEvent = new Object();
 	engine.TriggerEvent.apply = function (a, b) { };
 }
+/*jslint browser: true, nomen: true, plusplus: true */
+
+/// @file coherent.js
+/// @namespace engine
+
+/// Coherent UI JavaScript interface.
 /// The `engine` module contains all functions for communication between the UI and the game / application.
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
 		module.exports = factory(global, global.engine, false);
 	} else {
-		engine = factory(this, engine, true);
+		window.engine = factory(window, window.engine, true);
 	}
 })(function (global, engine, hasOnLoad) {
 	'use strict';
 
-	var VERSION = [1, 5, 0, 8];
+	var VERSION = [1, 10, 2, 0];
 
 	/**
 	* Event emitter
@@ -63,6 +69,8 @@ if (environment !== "Minecraft") {
 			}
 		};
 	};
+
+	/// @file coherent.js
 
 	/**
 	* Add a handler for an event
@@ -121,9 +129,18 @@ if (environment !== "Minecraft") {
 
 	var isAttached = engine !== undefined;
 	engine = engine || {};
-	/// @var {bool} engine.isAttached
-	/// Indicates whether the script is currently running inside the UI Engine
+	/// @var engine.isAttached
+	/// Indicates whether the script is currently running inside Coherent GT
 	engine.isAttached = isAttached;
+
+	/// @var engine.forceEnableMocking
+	/// Indicates whether mocking should be enabled despite running inside Coherent GT
+	engine.forceEnableMocking = global.engineForceEnableMocking || false;
+
+	/// @var engine.IsAttached
+	/// [DEPRECATED] Indicates whether the script is currently running inside Coherent GT
+	/// @warning This property is deprecated, please use engine.isAttached (with camelCase)
+	engine.IsAttached = engine.isAttached;
 
 	engine.onEventsReplayed = null;
 	Emitter.prototype.trigger = function (name) {
@@ -158,7 +175,7 @@ if (environment !== "Minecraft") {
 		var async = function () {
 			code.call(context, argument);
 		};
-		setTimeout(async, 1);
+		setTimeout(async);
 	}
 
 	function Promise() {
@@ -257,7 +274,7 @@ if (environment !== "Minecraft") {
 		return promise;
 	};
 
-	if (!engine.isAttached) {
+	if (!engine.isAttached || engine.forceEnableMocking) {
 		Emitter.prototype.on = function (name, callback, context) {
 			var handlers = this.events[name];
 			if (this.browserCallbackOn) {
@@ -343,7 +360,7 @@ if (environment !== "Minecraft") {
 
 		engine._mocks = {};
 		engine._mockImpl = function (name, mock, isCppCall, isEvent) {
-			if (mock) {
+			if (mock && isCppCall) {
 				this._mocks[name] = mock;
 			}
 			// Extract the name of the arguments from Function.prototype.toString
@@ -360,6 +377,10 @@ if (environment !== "Minecraft") {
 		engine.mock = function (name, mock, isEvent) {
 			this._mockImpl(name, mock, true, isEvent);
 		};
+		// Mock the call to translate to always return the key
+		engine.translate = function (text) {
+			return text;
+		};
 	}
 
 	engine.events = {};
@@ -367,13 +388,13 @@ if (environment !== "Minecraft") {
 		engine[property] = Emitter.prototype[property];
 	}
 
-	if (engine.isAttached) {
+	if (engine.isAttached && !engine.forceEnableMocking) {
 		engine.on = function (name, callback, context) {
 			var handlers = this.events[name];
 
 			if (handlers === undefined && engine.AddOrRemoveOnHandler !== undefined) {
 				// Check where to cache the handler
-				var prevEvent = engine.AddOrRemoveOnHandler(name, callback, context || engine);
+				var prevEvent = engine.AddOrRemoveOnHandler(name, callback, context);
 
 				// handler cached in C++
 				if (prevEvent === undefined) {
@@ -418,25 +439,28 @@ if (environment !== "Minecraft") {
 	/// @param {Number} timeScale The speed at which to replay the events (e.g. pass 2 to double the speed). Optional. Defaults to 1.
 	/// @param {String} path The path to the file the recorded events are stored. Optional. Defaults to "eventRecord.json"
 
+	/// @function engine.translate
+	/// Translates the given text by invoking the system's localization manager if one exists.
+	/// @param {text} text The text to translate.
+	/// @return {String} undefined if no localization manager is set or no translation exists, else returns the translated string
+	/// @function engine.reloadLocalization
+	/// Updates the text on all elements with the data-l10n-id attribute by calling engine.translate
 	/// @function engine.off
 	/// Remove handler for an event
 	/// @param {String} name name of the event, by default removes all events
 	/// @param {Function} callback the callback function to be removed, by default removes all callbacks for a given event
 	/// @param context *this* context for the function, by default all removes all callbacks, regardless of context
 	/// @warning Removing all handlers for `engine` will remove some *Coherent UI* internal events, breaking some functionality.
-
 	/// @function engine.trigger
 	/// Trigger an event
 	/// This function will trigger any C++ handler registered for this event with `Coherent::UI::View::RegisterForEvent`
 	/// @param {String} name name of the event
 	/// @param ... any extra arguments to be passed to the event handlers
-
 	engine._trigger = Emitter.prototype.trigger;
 	var concatArguments = Array.prototype.concat;
 	engine.trigger = function (name) {
 		this._trigger.apply(this, arguments);
 		this.TriggerEvent.apply(this, arguments);
-
 		if (this.events['all'] !== undefined) {
 			var allArguments = concatArguments.apply(['all'], arguments);
 			this._trigger.apply(this, allArguments);
@@ -444,30 +468,25 @@ if (environment !== "Minecraft") {
 	};
 	/// @function engine.showOverlay
 	/// Shows the debugging overlay in the browser.
-	/// Only works in the browser. Attempts to use it in Coherent UI will do nothing.
+	/// Will also work in Coherent GT only if *engineForceEnableMocking* is set to *true*.
 	engine.showOverlay = function () { };
-
-
 	/// @function engine.hideOverlay
 	/// Hides the debugging overlay in the browser.
-	/// Only works in the browser. Attempts to use it in Coherent UI will do nothing.
+	/// Will also work in Coherent GT only if *engineForceEnableMocking* is set to *true*.
 	engine.hideOverlay = function () { };
-
 	/// @function engine.mock
 	/// Mocks a C++ function call with the specified function.
-	/// Only works in the browser. Attempts to use it in Coherent UI will do nothing.
+	/// Will also work in Coherent GT only if *engineForceEnableMocking* is set to *true*.
 	/// @param {String} name name of the event
 	/// @param {Function} mock a function to be called in-place of your native binding
 	/// @param {Boolean} isEvent whether you are mocking an event or function call
-	if (engine.isAttached) {
+	if (engine.isAttached && !engine.forceEnableMocking) {
 		engine.mock = function (name, mock, isEvent) { };
 	}
-
 	engine._BindingsReady = false;
 	engine._WindowLoaded = false;
 	engine._RequestId = 0;
 	engine._ActiveRequests = {};
-
 	/// @function engine.createDeferred
 	/// Create a new deferred object.
 	/// Use this to create deferred / promises that can be used together with `engine.call`.
@@ -476,7 +495,6 @@ if (environment !== "Minecraft") {
 	engine.createDeferred = (global.engineCreateDeferred === undefined) ?
 		function () { return new Promise(); }
 		: global.engineCreateDeferred;
-
 	/// @function engine.call
 	/// Call asynchronously a C++ handler and retrieve the result
 	/// The C++ handler must have been registered with `Coherent::UI::View::BindCall`
@@ -486,7 +504,6 @@ if (environment !== "Minecraft") {
 	engine.call = function () {
 		engine._RequestId++;
 		var id = engine._RequestId;
-
 		var deferred = engine.createDeferred();
 		engine._ActiveRequests[id] = deferred;
 		var messageArguments = Array.prototype.slice.call(arguments);
@@ -494,57 +511,43 @@ if (environment !== "Minecraft") {
 		engine.SendMessage.apply(this, messageArguments);
 		return deferred;
 	};
-
 	engine._Result = function (requestId) {
 		var deferred = engine._ActiveRequests[requestId];
 		if (deferred !== undefined) {
 			delete engine._ActiveRequests[requestId];
-
 			var resultArguments = Array.prototype.slice.call(arguments);
 			resultArguments.shift();
 			deferred.resolve.apply(deferred, resultArguments);
 		}
 	};
-
 	engine._Errors = ['Success', 'ArgumentType', 'NoSuchMethod', 'NoResult'];
-
 	engine._ForEachError = function (errors, callback) {
 		var length = errors.length;
-
 		for (var i = 0; i < length; ++i) {
 			callback(errors[i].first, errors[i].second);
 		}
 	};
-
 	engine._MapErrors = function (errors) {
 		var length = errors.length;
-
 		for (var i = 0; i < length; ++i) {
 			errors[i].first = engine._Errors[errors[i].first];
 		}
 	};
-
 	engine._TriggerError = function (type, message) {
 		engine.trigger('Error', type, message);
 	};
-
 	engine._OnError = function (requestId, errors) {
 		engine._MapErrors(errors);
-
 		if (requestId === null || requestId === 0) {
 			engine._ForEachError(errors, engine._TriggerError);
 		}
 		else {
 			var deferred = engine._ActiveRequests[requestId];
-
 			delete engine._ActiveRequests[requestId];
-
 			deferred.reject(errors);
 		}
 	};
-
 	engine._eventHandles = {};
-
 	engine._Register = function (eventName) {
 		var trigger = (function (name, engine) {
 			return function () {
@@ -553,16 +556,13 @@ if (environment !== "Minecraft") {
 				engine.TriggerEvent.apply(this, eventArguments);
 			};
 		}(eventName, engine));
-
 		engine._eventHandles[eventName] = engine.on(eventName, trigger);
 	};
-
 	engine._removeEventThunk = function (name) {
 		var handle = engine._eventHandles[name];
 		handle.clear();
 		delete engine._eventHandles[name];
 	};
-
 	engine._Unregister = function (name) {
 		if (typeof name === 'string') {
 			engine._removeEventThunk(name);
@@ -570,7 +570,6 @@ if (environment !== "Minecraft") {
 			name.forEach(engine._removeEventThunk, engine);
 		}
 	};
-
 	function createMethodStub(name) {
 		var stub = function () {
 			var args = Array.prototype.slice.call(arguments);
@@ -579,15 +578,12 @@ if (environment !== "Minecraft") {
 		};
 		return stub;
 	}
-
 	engine._boundTypes = {};
-
 	engine._createInstance = function (args) {
 		var type = args[0],
 			id = args[1],
 			methods = args[2],
 			constructor = engine._boundTypes[type];
-
 		if (constructor === undefined) {
 			constructor = function (id) {
 				this._id = id;
@@ -598,59 +594,83 @@ if (environment !== "Minecraft") {
 			});
 			engine._boundTypes[type] = constructor;
 		}
-
 		var instance = new constructor(id);
 		engine.__observeLifetime(instance);
 		return instance;
 	}
-
 	engine._OnReady = function () {
 		engine._BindingsReady = true;
 		if (engine._WindowLoaded) {
 			engine.trigger('Ready');
 		}
 	};
-
 	engine._OnWindowLoaded = function () {
 		engine._WindowLoaded = true;
 		if (engine._BindingsReady) {
 			engine.trigger('Ready');
 		}
 	};
-
 	engine._ThrowError = function (error) {
 		var prependTab = function (s) { return "\t" + s; };
 		var errorString = error.name + ": " + error.message + "\n" +
 			error.stack.split("\n").map(prependTab).join("\n");
 		console.error(errorString);
 	};
-
 	if (hasOnLoad) {
-		global.onload = (function (originalWindowLoaded) {
-			return function () {
-				if (originalWindowLoaded) {
-					originalWindowLoaded();
-				}
-				engine._OnWindowLoaded();
-			};
-		}(global.onload));
+		global.addEventListener("load", function () {
+			engine._OnWindowLoaded();
+		});
 	} else {
 		engine._WindowLoaded = true;
 	}
-
+	engine._coherentGlobalCanvas = document.createElement('canvas');
+	engine._coherentGlobalCanvas.id = "coherentGlobalCanvas";
+	engine._coherentGlobalCanvas.width = 1;
+	engine._coherentGlobalCanvas.height = 1;
+	engine._coherentGlobalCanvas.style.zIndex = 0;
+	engine._coherentGlobalCanvas.style.position = "absolute";
+	engine._coherentGlobalCanvas.style.border = "0px solid";
+	engine._coherentLiveImageData = new Array();
+	engine._coherentCreateImageData = function (name, guid) {
+		var ctx = engine._coherentGlobalCanvas.getContext("2d");
+		var coherentImage = ctx.coherentCreateImageData(guid);
+		engine._coherentLiveImageData[name] = coherentImage;
+	}
+	engine._coherentUpdatedImageData = function (name) {
+		engine._coherentLiveImageData[name].coherentUpdate();
+		var canvases = document.getElementsByTagName('canvas');
+		for (var i = 0; i < canvases.length; ++i) {
+			if (canvases[i].onEngineImageDataUpdated != null) {
+				canvases[i].onEngineImageDataUpdated(name,
+					engine._coherentLiveImageData[name]);
+			}
+		}
+	}
+	engine.reloadLocalization = function () {
+		var localizedElements = document.querySelectorAll('[data-l10n-id]');
+		for (var i = 0; i < localizedElements.length; i++) {
+			var element = localizedElements.item(i);
+			var translated = engine.translate(element.dataset.l10nId);
+			if (!translated) {
+				var warning = "Failed to find translation for key: " + element.dataset.l10nId;
+				console.warn(warning);
+			} else {
+				element.textContent = translated;
+			}
+		}
+	};
+	engine.on("_coherentCreateImageData", engine._coherentCreateImageData);
+	engine.on("_coherentUpdatedImageData", engine._coherentUpdatedImageData);
 	engine.on('_Result', engine._Result, engine);
 	engine.on('_Register', engine._Register, engine);
 	engine.on('_Unregister', engine._Unregister, engine);
 	engine.on('_OnReady', engine._OnReady, engine);
 	engine.on('_OnError', engine._OnError, engine);
-
 	engine.on('__OnReplayRecordCompleted', function (jsonRecords) {
 		if (engine.onEventsReplayed) {
 			engine.onEventsReplayed();
 		}
 	});
-
 	engine.BindingsReady(VERSION[0], VERSION[1], VERSION[2], VERSION[3]);
-
 	return engine;
 });

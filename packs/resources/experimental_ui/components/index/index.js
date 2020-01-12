@@ -1,14 +1,10 @@
 
 // Get a handle to the scripting interface on creation.
 // The script interface can trigger events to the client script
-let scriptInterface = null;
-scriptInterface = new Object();
-scriptInterface.triggerEvent = function (a) { };
+let scriptInterface = undefined;
 engine.on("facet:updated:core.scripting", function (interface) {
     scriptInterface = interface;
-    scriptInterface.triggerEvent("indexUiOpened");
 });
-
 engine.trigger("facet:request", ["core.scripting"]);
 
 isPlayButton = true;

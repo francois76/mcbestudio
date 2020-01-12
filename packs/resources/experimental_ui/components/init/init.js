@@ -1,6 +1,6 @@
 // Get a handle to the scripting interface on creation.
 // The script interface can trigger events to the client script
-let scriptInterface = null;
+let scriptInterface = undefined;
 engine.on("facet:updated:core.scripting", function (interface) {
     scriptInterface = interface;
 });
